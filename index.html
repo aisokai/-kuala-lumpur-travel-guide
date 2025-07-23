@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クアラルンプール旅行ガイド</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        .tab-button {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+        
+        .tab-button.tab-active::after {
+            width: 80%;
+        }
+        
+        .tab-active {
+            color: #3B82F6;
+            font-weight: 600;
+            transform: translateY(-1px);
+        }
+        
+        .tab-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+        
+        .tab-content.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        
+        .card-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .card-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .card-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #10B981;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        details {
+            transition: all 0.3s ease;
+        }
+        
+        details[open] {
+            background: #f8fafc;
+        }
+        
+        details summary {
+            transition: all 0.3s ease;
+        }
+        
+        details[open] summary {
+            color: #3B82F6;
+            font-weight: 600;
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #e5e7eb;
+            z-index: 9999;
+        }
+        
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .tab-button {
+                font-size: 0.875rem;
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 text-gray-800 min-h-screen">
+    
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <div class="container mx-auto p-4 max-w-5xl">
+        <header class="text-center mb-8 py-8 bg-white rounded-2xl shadow-lg hover-lift">
+            <div class="gradient-bg bg-clip-text text-transparent">
+                <h1 class="text-4xl md:text-5xl font-bold mb-2">クアラルンプール旅行ガイド</h1>
+            </div>
+            <p class="text-gray-600 mt-4 text-lg">マレーシア・クアラルンプール旅行のための完全ガイド</p>
+            <div class="mt-4 flex justify-center items-center space-x-2">
+                <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span class="text-sm text-gray-500">最終更新: 2025年7月</span>
+            </div>
+        </header>
+
+        <div class="bg-white rounded-2xl shadow-lg mb-8 sticky top-4 z-50">
+            <nav class="flex flex-wrap justify-center border-b border-gray-200">
+                <button data-tab="tab-overview" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">📍 </span>概要
+                </button>
+                <button data-tab="tab-spots" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">🏛️ </span>観光
+                </button>
+                <button data-tab="tab-food" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">🍜 </span>食事
+                </button>
+                <button data-tab="tab-transport" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">🚊 </span>交通
+                </button>
+                <button data-tab="tab-money" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">💰 </span>費用
+                </button>
+                <button data-tab="tab-tips" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">💡 </span>注意点
+                </button>
+                <button data-tab="tab-itinerary" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">📅 </span>旅程例
+                </button>
+                <button data-tab="tab-preparation" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">✅ </span>事前準備
+                </button>
+                <button data-tab="tab-laundry" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">👕 </span>洗濯
+                </button>
+                <button data-tab="tab-checklist" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center hover:bg-gray-50 transition-all duration-300">
+                    <span class="hidden sm:inline">🎒 </span>持ち物
+                </button>
+            </nav>
+        </div>
+
+        <main>
+            <!-- 概要 -->
+            <div id="tab-overview" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🏙️</span>
+                        <h2 class="text-3xl font-bold text-blue-600">クアラルンプール概要</h2>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-2xl mb-8">
+                        <h3 class="font-bold text-xl mb-4 text-purple-800">🏨 アロフト・クアラルンプールについて</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-purple-700 mb-3">🌟 ホテルの特徴</h4>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li>• モダンでスタイリッシュなデザインホテル</li>
+                                    <li>• KLセントラル駅から徒歩圏内の好立地</li>
+                                    <li>• 家族向けの広々とした客室</li>
+                                    <li>• 屋上プールとバーが人気</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-purple-700 mb-3">🎯 ホテル内での楽しみ方</h4>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li>• <strong>屋上プール:</strong> 昼は家族でプール、夕方はサンセットタイム</li>
+                                    <li>• <strong>MAIバー:</strong> 夜景を楽しめる屋上バー</li>
+                                    <li>• <strong>Nook:</strong> 24時間営業のカジュアルダイニング</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="mb-6 text-lg leading-relaxed">都会的な魅力と豊かな多文化が共存するクアラルンプール。物価が安く、美味しいグルメや見応えのある観光スポット、自然体験、テーマパークでの家族の楽しい時間が満載です。バード・パークやバタフライ・パークでの動物との触れ合い、サンウェイラグーンでのスリル満点体験、南国フルーツの味覚体験など、異国情緒あふれる活気ある街並みを家族で体験できます。</p>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2 text-blue-800">🌏 多様な文化</h3>
+                            <p class="text-sm text-blue-700">マレー系、中国系、インド系の文化が混ざり合い、ユニークな雰囲気を醸し出しています。</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2 text-green-800">💵 物価の安さ</h3>
+                            <p class="text-sm text-green-700">ローカルフードは日本の約1/3。5つ星ホテルも比較的安価で、コストパフォーマンスが高いです。</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2 text-purple-800">📅 滞在日数目安</h3>
+                            <p class="text-sm text-purple-700">主要スポットだけなら1泊2日でも可能ですが、ゆっくり楽しむなら3泊4日以上がおすすめです。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 観光スポット -->
+            <div id="tab-spots" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🏛️</span>
+                        <h2 class="text-3xl font-bold text-green-600">主要エリアと観光スポット</h2>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-xl mb-6">
+                        <p class="text-green-800">観光スポットはチャイナタウン周辺に集中しているため、このエリアでの滞在が便利です。</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <details class="group bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-blue-700 flex items-center">
+                                <span class="mr-3 text-2xl">🏢</span>
+                                KLCCエリア
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="p-4 bg-white rounded-lg border-l-4 border-blue-400">
+                                    <strong class="text-blue-700">ペトロナスツインタワー:</strong> 
+                                    <span class="text-gray-700">KLの象徴。夜のライトアップと噴水ショーは必見。</span>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg border-l-4 border-blue-400">
+                                    <strong class="text-blue-700">スリアKLCC:</strong> 
+                                    <span class="text-gray-700">タワー直結の大型モール。ショッピングや食事に便利。</span>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg border-l-4 border-blue-400">
+                                    <strong class="text-blue-700">KLCC公園:</strong> 
+                                    <span class="text-gray-700">タワーを背景にした写真撮影に最適。噴水ショーもここから楽しめます。</span>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="group bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-red-700 flex items-center">
+                                <span class="mr-3 text-2xl">🏮</span>
+                                チャイナタウンエリア
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="p-4 bg-white rounded-lg border-l-4 border-red-400">
+                                    <strong class="text-red-700">ペタリンストリート:</strong> 
+                                    <span class="text-gray-700">屋台や雑貨店が並ぶアーケード街。カフェも多い。</span>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg border-l-4 border-red-400">
+                                    <strong class="text-red-700">セントラルマーケット:</strong> 
+                                    <span class="text-gray-700">お土産探しに最適。「なまこ石鹸」が人気。</span>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg border-l-4 border-red-400">
+                                    <strong class="text-red-700">関帝廟 & スリ・マハ・マリアマン寺院:</strong> 
+                                    <span class="text-gray-700">中国寺院とヒンドゥー教寺院が隣接し、多文化を体感できます。</span>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="mt-8 bg-gradient-to-r from-emerald-500 to-teal-600 text-blue p-6 rounded-2xl">
+                        <h3 class="font-bold text-xl mb-4 text-blue">💡 この旅程のポイント</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold mb-2 text-blue">🏨 ホテル活用術</h4>
+                                <ul class="text-sm space-y-1 text-blue">
+                                    <li>• プールタイムを毎日確保で家族リラックス</li>
+                                    <li>• Nookで気軽な食事、時差ぼけ対策にも</li>
+                                    <li>• 荷物預かりサービスを最終日に活用</li>
+                                    <li>• 屋上バーで大人の時間も確保</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2 text-blue">👨‍👩‍👧‍👦 家族旅行のコツ</h4>
+                                <ul class="text-sm space-y-1 text-blue">
+                                    <li>• 午後のスコール時間はホテルやモール内で過ごす</li>
+                                    <li>• サンウェイラグーンで思いっきり遊ぶ1日を確保</li>
+                                    <li>• バード・パーク、バタフライ・パークで自然体験</li>
+                                    <li>• フルーツ体験で南国の味覚を満喫</li>
+                                    <li>• 移動は余裕を持ったスケジュール</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-white bg-opacity-20 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2 text-blue">🎢🦜🥭 特別体験の日程</h4>
+                            <ul class="text-sm space-y-1 text-blue">
+                                <li>• <strong>Day 3 - 自然体験:</strong> KLバード・パーク、KLバタフライ・パーク、フルーツ市場</li>
+                                <li>• <strong>Day 5 - サンウェイラグーン:</strong> 東南アジア最大級のテーマパーク、ウォーターパーク満喫</li>
+                                <li>• <strong>Day 6 - プトラモスク:</strong> インスタ映え必至のピンクモスクで最後の記念撮影</li>
+                                <li>• <strong>フルーツ体験:</strong> 2回に分けて様々な南国フルーツを味わう</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 食事 -->
+            <div id="tab-food" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🍜</span>
+                        <h2 class="text-3xl font-bold text-yellow-600">食事</h2>
+                    </div>
+                    <p class="mb-6 text-lg leading-relaxed">マレー、中華、インド料理が融合した多様な食文化が魅力です。</p>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-yellow-800">🍽️ 定番グルメ</h3>
+                            <ul class="card-list space-y-3">
+                                <li><strong>ナシレマ:</strong> ココナッツミルクで炊いたご飯が特徴の国民食。</li>
+                                <li><strong>ラクサ:</strong> スパイシーな麺料理。店によって味が全く異なります。</li>
+                                <li><strong>カヤトースト:</strong> コピーティアム（カフェ）での朝食の定番。</li>
+                                <li><strong>チキンライス:</strong> 鶏の旨味が染みたご飯が絶品。</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-blue-800">🏪 食事場所</h3>
+                            <ul class="card-list space-y-3">
+                                <li><strong>フードコート:</strong> モール内にあり清潔で快適。</li>
+                                <li><strong>ローカル食堂:</strong> 安くて美味しいですが、現金のみの店も多いです。</li>
+                                <li><strong>有名チェーン店:</strong> Oriental Kopi, Madam Kwan'sなど。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 交通手段 -->
+            <div id="tab-transport" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🚊</span>
+                        <h2 class="text-3xl font-bold text-purple-600">交通手段</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-purple-800">📱 Grab (タクシー配車アプリ)</h3>
+                            <p class="mb-4 text-purple-700">最も推奨される移動手段。事前に料金が確定し、キャッシュレス決済も可能で安心です。</p>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-green-800">🚇 公共交通機関</h3>
+                            <p class="mb-4 text-green-700">料金が非常に安く、主要観光地を結んでいます。Touch 'n Go カードがあると便利です。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 費用と通貨 -->
+            <div id="tab-money" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">💰</span>
+                        <h2 class="text-3xl font-bold text-indigo-600">費用と通貨</h2>
+                    </div>
+                    <ul class="space-y-4 card-list">
+                        <li><strong>為替レート:</strong> 1マレーシアリンギット(MYR) ≒ 32円〜35円 (2025年1月〜6月時点)</li>
+                        <li><strong>両替:</strong> 空港より市街地の両替所の方がレートが良いです</li>
+                        <li><strong>支払い:</strong> モール等はカード可、屋台やローカル店は現金が主流</li>
+                        <li><strong>Wiseカード:</strong> 事前にリンギットに両替でき、現地ATMでの引き出しにも便利</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- その他役立つ情報と注意点 -->
+            <div id="tab-tips" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">💡</span>
+                        <h2 class="text-3xl font-bold text-pink-600">その他役立つ情報と注意点</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <details class="group bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-blue-700 flex items-center">
+                                <span class="mr-3 text-2xl">🌤️</span>
+                                気候と服装
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6">
+                                <ul class="space-y-2 text-gray-700 text-sm">
+                                    <li>• 年間を通して高温多湿</li>
+                                    <li>• 午後にスコール（短時間の強い雨）が多い</li>
+                                    <li>• 屋内は冷房が非常に強いので、薄手の羽織り物が必要</li>
+                                    <li>• 日焼け止め、サングラス、折りたたみ傘は必須</li>
+                                </ul>
+                            </div>
+                        </details>
+                        
+                        <details class="group bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-green-700 flex items-center">
+                                <span class="mr-3 text-2xl">🛡️</span>
+                                治安と安全
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6">
+                                <ul class="space-y-2 text-gray-700 text-sm">
+                                    <li>• 比較的安全ですが、スリやひったくりには注意</li>
+                                    <li>• 夜間の一人歩きや人通りの少ない道は避ける</li>
+                                    <li>• 詐欺にも注意。知らない人を安易に信用しない</li>
+                                </ul>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 旅程モデル -->
+            <div id="tab-itinerary" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">📅</span>
+                        <h2 class="text-3xl font-bold text-teal-600">6泊7日 家族旅行モデルプラン</h2>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-teal-50 to-blue-50 p-6 rounded-2xl mb-8">
+                        <h3 class="font-bold text-xl mb-4 text-teal-800">✈️ 旅行概要</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-3">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">📅 旅行期間</h4>
+                                    <p class="text-sm text-gray-700">2025年8月8日（金）〜 8月14日（木）<br>6泊7日</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">👨‍👩‍👧‍👦 旅行者</h4>
+                                    <p class="text-sm text-gray-700">4人家族</p>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">🏨 宿泊先</h4>
+                                    <p class="text-sm text-gray-700">アロフト・クアラルンプール<br>（セントラル駅エリア）</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">✈️ フライト</h4>
+                                    <p class="text-sm text-gray-700">関空 ⇄ クアラルンプール国際空港</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <details class="group bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-red-700 flex items-center">
+                                <span class="mr-3 text-2xl">🛬</span>
+                                Day 1 - 8月8日（金）到着日
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-red-700 mb-2">✈️ フライト・移動</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>14:25</strong> 関空発 → <strong>20:25</strong> KLIA着（現地時間）</li>
+                                        <li><strong>21:00</strong> 入国手続き・荷物受取</li>
+                                        <li><strong>21:30</strong> Grabでホテルへ（約45分）</li>
+                                        <li><strong>22:30</strong> アロフト・クアラルンプール到着</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="group bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-blue-700 flex items-center">
+                                <span class="mr-3 text-2xl">🏢</span>
+                                Day 2 - 8月9日（土）KLCCエリア観光
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-700 mb-2">🌅 午前（8:00-12:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>8:00</strong> ホテルで朝食</li>
+                                        <li><strong>9:30</strong> LRTでKLCC駅へ（約15分）</li>
+                                        <li><strong>10:00</strong> ペトロナスツインタワー見学・写真撮影</li>
+                                        <li><strong>11:00</strong> スリアKLCCでショッピング・ランチ場所確認</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-700 mb-2">🍽️ 午後（12:00-18:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>12:00</strong> スリアKLCC内フードコートでランチ</li>
+                                        <li><strong>13:30</strong> KLCC公園で休憩・子供の遊び時間</li>
+                                        <li><strong>15:00</strong> アクアリアKLCC見学（家族向け）</li>
+                                        <li><strong>17:00</strong> カフェで休憩・スナック</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-700 mb-2">🌆 夜（18:00-22:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>18:00</strong> ホテルへ戻り、プールタイム（家族でリラックス）</li>
+                                        <li><strong>19:30</strong> <strong>Oriental Kopi</strong>でマレーシア料理ディナー（オススメ！）</li>
+                                        <li><strong>21:00</strong> ホテル屋上MAIバーでサンセット（大人のみ）</li>
+                                        <li><strong>22:00</strong> 就寝</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 3 -->
+                        <details class="group bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-green-700 flex items-center">
+                                <span class="mr-3 text-2xl">🦜</span>
+                                Day 3 - 8月10日（日）バトゥ洞窟・バード&バタフライパーク
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-green-700 mb-2">🌄 午前（8:00-12:30）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>8:00</strong> <strong>Village Park Restaurant</strong>で本格ナシレマ朝食（絶対オススメ！）</li>
+                                        <li><strong>9:00</strong> Grabでバトゥ洞窟へ（約45分）</li>
+                                        <li><strong>10:00</strong> バトゥ洞窟見学（272段の階段に挑戦！猿に注意）</li>
+                                        <li><strong>11:30</strong> 近くのインド料理レストランで軽めランチ</li>
+                                        <li><strong>12:30</strong> KLバード・パークへ移動（約30分）</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-green-700 mb-2">🦜 午後（13:00-17:30）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>13:00</strong> <strong>KLバード・パーク</strong>見学（世界最大級の飛行可能バード・パーク！）</li>
+                                        <li><strong>14:30</strong> <strong>KLバタフライ・パーク</strong>見学（美しい蝶々の楽園）</li>
+                                        <li><strong>15:30</strong> <strong>チョウキット・マーケット</strong>でフルーツ体験ツアー（マンゴー、ドリアン、ランブータン、マンゴスチンなど）</li>
+                                        <li><strong>16:30</strong> <strong>Ais Kacang</strong>（カキ氷）でクールダウン</li>
+                                        <li><strong>17:30</strong> ホテルへ戻る</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-green-700 mb-2">🏊 夜（18:00-22:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>18:30</strong> ホテルのプールでリフレッシュ</li>
+                                        <li><strong>19:30</strong> Nookで家族ディナー</li>
+                                        <li><strong>21:00</strong> 客室でくつろぎタイム</li>
+                                        <li><strong>22:00</strong> 就寝</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 4 -->
+                        <details class="group bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-purple-700 flex items-center">
+                                <span class="mr-3 text-2xl">🏮</span>
+                                Day 4 - 8月11日（月）チャイナタウン・文化体験・グルメ探索
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-purple-700 mb-2">🥐 午前（9:00-13:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>9:00</strong> ホテル近くのコピーティアムでカヤトースト朝食体験</li>
+                                        <li><strong>10:00</strong> 国立モスク（マスジッド・ネガラ）見学</li>
+                                        <li><strong>11:00</strong> ムルデカ広場・独立記念館周辺散策</li>
+                                        <li><strong>12:00</strong> <strong>新峰肉骨茶</strong>で絶品バクテー（肉骨茶）ランチ（超オススメ！）</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-purple-700 mb-2">🛍️ 午後（13:00-17:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>13:30</strong> LRTでパサール・スニ駅へ、チャイナタウン散策</li>
+                                        <li><strong>14:00</strong> 関帝廟・スリ・マハ・マリアマン寺院見学</li>
+                                        <li><strong>15:00</strong> ペタリンストリート散策・カフェタイム</li>
+                                        <li><strong>15:30</strong> <strong>セントラルマーケット</strong>でお土産購入（なまこ石鹸など）</li>
+                                        <li><strong>16:30</strong> <strong>天后宮（Thean Hou Temple）</strong>へ移動・見学（絶景スポット！）</li>
+                                        <li><strong>17:30</strong> ホテルへ戻る</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-purple-700 mb-2">🌃 夜（17:30-23:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>18:00</strong> ホテルで休憩・着替え</li>
+                                        <li><strong>19:00</strong> <strong>ジャランアロー</strong>で屋台グルメツアー（必見の屋台街！）</li>
+                                        <li><strong>21:00</strong> <strong>パビリオンKL</strong>で夜のショッピング（高級モール）</li>
+                                        <li><strong>22:30</strong> ホテルへ戻る</li>
+                                        <li><strong>23:00</strong> 就寝</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 5 -->
+                        <details class="group bg-gradient-to-r from-teal-50 to-blue-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-teal-700 flex items-center">
+                                <span class="mr-3 text-2xl">🎢</span>
+                                Day 5 - 8月12日（火）サンウェイラグーン（テーマパーク）
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">🎡 午前（8:00-12:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>8:00</strong> ホテルで朝食・水着準備</li>
+                                        <li><strong>9:00</strong> Grabでサンウェイラグーンへ（約45分）</li>
+                                        <li><strong>10:00</strong> <strong>サンウェイラグーン</strong>入園・ウォーターパークエリアへ</li>
+                                        <li><strong>10:30</strong> ファミリー向けウォータースライダー体験</li>
+                                        <li><strong>11:30</strong> 波のプールで家族タイム</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">🏊 午後（12:00-17:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>12:00</strong> パーク内レストランでランチ</li>
+                                        <li><strong>13:00</strong> アミューズメントパークエリアへ移動</li>
+                                        <li><strong>13:30</strong> 家族向けライド＆アトラクション</li>
+                                        <li><strong>15:00</strong> <strong>動物園エリア</strong>で動物との触れ合い</li>
+                                        <li><strong>16:00</strong> 最後のウォーターパーク満喫</li>
+                                        <li><strong>17:00</strong> 隣接する<strong>サンウェイピラミッド</strong>でショッピング</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">🌆 夜（18:00-22:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>18:00</strong> サンウェイピラミッド内でディナー</li>
+                                        <li><strong>19:30</strong> クアラルンプールへ戻る</li>
+                                        <li><strong>20:30</strong> ホテル到着・シャワー</li>
+                                        <li><strong>21:30</strong> 就寝準備（テーマパークでたっぷり遊んだ後）</li>
+                                        <li><strong>22:00</strong> 就寝</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 6 -->
+                        <details class="group bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-orange-700 flex items-center">
+                                <span class="mr-3 text-2xl">🌸</span>
+                                Day 6 - 8月13日（水）プトラモスク・最後のショッピング・フルーツ三昧
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-orange-700 mb-2">🌸 午前（9:00-13:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>9:00</strong> ホテルで朝食・チェックアウト（荷物預かり依頼）</li>
+                                        <li><strong>10:00</strong> Grabで<strong>プトラモスク（ピンクモスク）</strong>へ（約45分）</li>
+                                        <li><strong>10:45</strong> プトラモスク見学・写真撮影（インスタ映え間違いなし！）</li>
+                                        <li><strong>12:00</strong> プトラ湖周辺で散策・最後の記念撮影</li>
+                                        <li><strong>13:00</strong> クアラルンプールへ戻る・<strong>Madam Kwan's</strong>でランチ</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-orange-700 mb-2">🛍️ 午後（14:00-18:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>14:00</strong> <strong>ミッドバレー・メガモール</strong>で最後のショッピング（巨大モール！）</li>
+                                        <li><strong>15:30</strong> <strong>Jalan Imbi Fruit Stalls</strong>で最後のフルーツ体験（ドリアン王様の味、季節のフルーツ）</li>
+                                        <li><strong>16:30</strong> <strong>Feeka Coffee Roasters</strong>で休憩・旅行の振り返り（おしゃれカフェ）</li>
+                                        <li><strong>17:30</strong> ホテルに戻り荷物受取</li>
+                                        <li><strong>18:00</strong> <strong>Old China Cafe</strong>で最後のマレーシア料理ディナー</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-orange-700 mb-2">✈️ 深夜（19:00-02:10）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>19:30</strong> ホテルでシャワー・準備（デイユース部屋があれば利用）</li>
+                                        <li><strong>22:30</strong> Grabで空港へ出発</li>
+                                        <li><strong>23:30</strong> KLIA到着・チェックイン</li>
+                                        <li><strong>00:30</strong> 出国手続き・免税店でラストショッピング（ドライフルーツ、フルーツ菓子のお土産）</li>
+                                        <li><strong>02:10</strong> 関空行きフライト出発</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 7 -->
+                        <details class="group bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-gray-700 flex items-center">
+                                <span class="mr-3 text-2xl">🛬</span>
+                                Day 7 - 8月14日（木）帰国
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-700 mb-2">✈️ フライト・帰国</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>02:10</strong> KLIA発 → <strong>09:50</strong> 関空着（日本時間）</li>
+                                        <li><strong>10:30</strong> 入国手続き・荷物受取完了</li>
+                                        <li><strong>11:00</strong> 帰路へ</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 事前準備 -->
+            <div id="tab-preparation" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">✅</span>
+                        <h2 class="text-3xl font-bold text-emerald-600">日本出発前の事前準備</h2>
+                    </div>
+                    
+                    <div class="bg-emerald-50 p-4 rounded-xl mb-8">
+                        <p class="text-emerald-800 font-semibold">📋 準備開始時期の目安：出発の1ヶ月前から順次準備を始めましょう</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- 必須書類・手続き -->
+                        <div class="bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-red-800 flex items-center">
+                                <span class="mr-2">📋</span>必須書類・手続き（1ヶ月前〜）
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-red-700 mb-3">📄 書類の確認</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>パスポート残存期間：</strong> 入国時6ヶ月以上必要</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>航空券：</strong> e-ticketの印刷またはアプリ保存</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>ホテル予約確認書：</strong> 英語版を印刷</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>パスポートコピー：</strong> 万が一に備えて複数枚</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-red-700 mb-3">🌐 オンライン手続き</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>MDAC登録：</strong> マレーシア・デジタル・アライバル・カード（必須）</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>MyEG利用：</strong> 入国審査迅速化（推奨）</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>オンラインチェックイン：</strong> 出発24時間前</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 旅行保険・医療準備 -->
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-blue-800 flex items-center">
+                                <span class="mr-2">🏥</span>旅行保険・医療準備（3週間前〜）
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-blue-700 mb-3">🛡️ 旅行保険</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>海外旅行保険加入：</strong> 疾病・傷害・携行品カバー</li>
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>家族全員分：</strong> 4人家族の場合は全員分確認</li>
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>クレジットカード付帯：</strong> 補償内容・条件を確認</li>
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>保険証書：</strong> 英語版をスマホに保存</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-blue-700 mb-3">💊 医療準備</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>常備薬：</strong> 普段服用の薬は多めに準備</li>
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>下痢止め・整腸剤：</strong> 食べ慣れない食事対策</li>
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>解熱鎮痛剤・風邪薬：</strong> 気候変化対策</li>
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>絆創膏・消毒液：</strong> 軽いケガ対策</li>
+                                        <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>アレルギー薬：</strong> フルーツ体験に備えて</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 洗濯ガイド -->
+            <div id="tab-laundry" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">👕</span>
+                        <h2 class="text-3xl font-bold text-cyan-600">アロフト滞在中の洗濯完全ガイド</h2>
+                    </div>
+                    
+                    <div class="bg-cyan-50 p-4 rounded-xl mb-8">
+                        <p class="text-cyan-800 font-semibold">🧺 6泊7日の滞在を快適に過ごすための洗濯戦略とおすすめ方法をご紹介します</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- アロフトホテルの洗濯オプション -->
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-6 text-blue-800 flex items-center">
+                                <span class="mr-2">🏨</span>アロフト・クアラルンプールの洗濯オプション
+                            </h3>
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="bg-white p-5 rounded-xl border-l-4 border-blue-400">
+                                    <h4 class="font-bold text-blue-700 mb-3 flex items-center">
+                                        <span class="mr-2">🛎️</span>ランドリーサービス（推奨）
+                                    </h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li>• <strong>料金:</strong> 1点 15-25MYR（約600-1000円）</li>
+                                        <li>• <strong>仕上がり:</strong> 翌日18:00までに客室へお届け</li>
+                                        <li>• <strong>品質:</strong> プロの洗濯・アイロン仕上げ</li>
+                                        <li>• <strong>依頼方法:</strong> フロントデスクまたは客室電話</li>
+                                        <li>• <strong>袋:</strong> 専用ランドリーバッグを貸出</li>
+                                    </ul>
+                                    <div class="mt-3 bg-blue-100 p-3 rounded-lg">
+                                        <p class="text-blue-800 text-xs"><strong>💡 メリット:</strong> 手間いらずで高品質！旅行中の貴重な時間を節約できます。</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-5 rounded-xl border-l-4 border-green-400">
+                                    <h4 class="font-bold text-green-700 mb-3 flex items-center">
+                                        <span class="mr-2">🪙</span>セルフランドリー
+                                    </h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li>• <strong>場所:</strong> 6階（フィットネス近く）</li>
+                                        <li>• <strong>営業時間:</strong> 24時間利用可能</li>
+                                        <li>• <strong>洗濯機:</strong> 8MYR（約320円）/1回</li>
+                                        <li>• <strong>乾燥機:</strong> 6MYR（約240円）/30分</li>
+                                        <li>• <strong>洗剤:</strong> 自動投入（料金込み）</li>
+                                        <li>• <strong>所要時間:</strong> 洗濯45分+乾燥60分</li>
+                                    </ul>
+                                    <div class="mt-3 bg-green-100 p-3 rounded-lg">
+                                        <p class="text-green-800 text-xs"><strong>💡 メリット:</strong> コスパ良好！複数人分まとめて洗えます。</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-5 rounded-xl border-l-4 border-purple-400">
+                                    <h4 class="font-bold text-purple-700 mb-3 flex items-center">
+                                        <span class="mr-2">🚿</span>客室手洗い
+                                    </h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li>• <strong>場所:</strong> バスルームの洗面台・バスタブ</li>
+                                        <li>• <strong>適用品:</strong> 下着、靴下、Tシャツなど</li>
+                                        <li>• <strong>料金:</strong> 無料（持参洗剤使用）</li>
+                                        <li>• <strong>干し場所:</strong> バスルーム内、ベランダ</li>
+                                        <li>• <strong>乾燥時間:</strong> 4-8時間（湿度により変動）</li>
+                                    </ul>
+                                    <div class="mt-3 bg-purple-100 p-3 rounded-lg">
+                                        <p class="text-purple-800 text-xs"><strong>💡 メリット:</strong> 経済的で緊急時にも対応可能。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 持ち物 -->
+            <div id="tab-checklist" class="tab-content space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🎒</span>
+                        <h2 class="text-3xl font-bold text-purple-600">持ち物チェックリスト</h2>
+                    </div>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-purple-800">📱 必需品</h3>
+                            <ul class="card-list space-y-3">
+                                <li><strong>パスポート：</strong> 残存期間6ヶ月以上</li>
+                                <li><strong>航空券：</strong> e-ticket印刷またはアプリ</li>
+                                <li><strong>現金・カード：</strong> Wiseカード推奨</li>
+                                <li><strong>スマートフォン：</strong> Grabアプリダウンロード済み</li>
+                                <li><strong>充電器：</strong> 変換プラグも忘れずに</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-green-800">👕 衣類・日用品</h3>
+                            <ul class="card-list space-y-3">
+                                <li><strong>軽装：</strong> Tシャツ、短パン中心</li>
+                                <li><strong>羽織り物：</strong> 冷房対策必須</li>
+                                <li><strong>日焼け止め：</strong> SPF30以上推奨</li>
+                                <li><strong>折りたたみ傘：</strong> スコール対策</li>
+                                <li><strong>水着：</strong> ホテルプール・テーマパーク用</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="mt-12 text-center py-6 bg-white rounded-2xl">
+            <p class="text-gray-600">🌟 素敵なクアラルンプール旅行をお楽しみください！</p>
+            <p class="text-sm text-gray-500 mt-2">このガイドが皆様の旅行のお役に立てれば幸いです。</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const scrollProgress = document.getElementById('scrollProgress');
+
+            function updateScrollProgress() {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                scrollProgress.style.width = scrollPercent + '%';
+            }
+
+            window.addEventListener('scroll', updateScrollProgress);
+
+            // 初期表示設定
+            function activateTab(selectedTab) {
+                const targetId = selectedTab.dataset.tab;
+                const targetContent = document.getElementById(targetId);
+
+                // 全てのタブとコンテンツから active クラスを削除
+                tabs.forEach(t => t.classList.remove('tab-active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                // 選択されたタブとコンテンツに active クラスを追加
+                selectedTab.classList.add('tab-active');
+                if (targetContent) {
+                    setTimeout(() => {
+                        targetContent.classList.add('active');
+                    }, 50);
+                }
+            }
+
+            // 初期表示（概要タブをアクティブに）
+            if (tabs.length > 0) {
+                activateTab(tabs[0]);
+            }
+
+            // タブクリックイベント
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    activateTab(tab);
+                    
+                    // タブナビゲーションバーにスクロール
+                    const tabNav = document.querySelector('nav').parentElement;
+                    tabNav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
