@@ -3,12 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>クアラルンプール旅行ガイド - 完全版</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>クアラルンプール6泊7日家族旅行ガイド - KLタワー＆モスクツアー版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
             line-height: 1.6;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        .tab-button {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #cbd5e0;
+            color: #4a5568;
+        }
+        
+        .tab-button:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            color: #2d3748;
+            transform: translateY(-1px);
+        }
+        
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+        
+        .tab-button.tab-active {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            color: white;
+            font-weight: 600;
+            transform: translateY(-2px);
+            border-color: #3B82F6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .tab-button.tab-active::after {
+            width: 80%;
+        }
+        
+        .tab-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+        
+        .tab-content.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
         }
         
         .card-list li {
@@ -37,929 +93,1311 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
-        .section-header {
-            border-left: 5px solid #3B82F6;
-            padding-left: 1rem;
-            margin: 2rem 0 1rem 0;
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        details {
+            transition: all 0.3s ease;
+        }
+        
+        details[open] {
+            background: #f8fafc;
+        }
+        
+        details summary {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        details[open] summary {
+            color: #3B82F6;
+            font-weight: 600;
+        }
+        
+        .warning-box {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .warning-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(239, 68, 68, 0.1), rgba(245, 101, 101, 0.1));
+            pointer-events: none;
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #e5e7eb;
+            z-index: 9999;
+        }
+        
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .tab-button {
+                font-size: 0.875rem;
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        /* PDF出力対応のスタイル */
          {
             body {
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            
+            .tab-button {
+                display: none;
+            }
+            
+            .tab-content {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+                page-break-inside: avoid;
+                margin-bottom: 2rem;
+            }
+            
+            .scroll-indicator {
+                display: none;
+            }
+            
+            .hover-lift:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            
+            details {
+                border: 1px solid #e5e7eb;
+                margin-bottom: 1rem;
+            }
+            
+            details[open] summary {
+                border-bottom: 1px solid #e5e7eb;
+                padding-bottom: 0.5rem;
+                margin-bottom: 0.5rem;
             }
         }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-purple-50 text-gray-800">
+    
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
 
-    <div class="container mx-auto p-6 max-w-5xl">
-        <header class="text-center mb-8 py-8 bg-white bg-opacity-80 rounded-2xl shadow-lg">
+    <div class="container mx-auto p-4 max-w-6xl">
+        <header class="text-center mb-8 py-8 bg-white/70 backdrop-blur-md rounded-2xl shadow-lg hover-lift">
             <div class="gradient-bg bg-clip-text text-transparent">
                 <h1 class="text-4xl md:text-5xl font-bold mb-2">クアラルンプール旅行ガイド</h1>
             </div>
-            <p class="text-gray-600 mt-4 text-lg">マレーシア・クアラルンプール6泊7日家族旅行のための完全ガイド</p>
+            <p class="text-gray-600 mt-4 text-lg">KLタワー＆本格モスクツアーで巡る6泊7日家族旅行</p>
             <div class="mt-4 flex justify-center items-center space-x-2">
-                <span class="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
-                <span class="text-sm text-gray-500">最終更新: 2025年7月</span>
+                <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span class="text-sm text-gray-500">最終更新: 2025年1月 - KLタワー＆Veltraツアー対応版</span>
             </div>
         </header>
 
-        <main class="space-y-12">
-            <!-- 概要セクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-blue-600 flex items-center">
-                        <span class="text-4xl mr-4">🏙️</span>クアラルンプール概要
-                    </h2>
-                </div>
+        <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg mb-8 sticky top-4 z-50">
+            <nav class="flex flex-wrap justify-center border-b border-gray-200/50">
+                <button data-tab="tab-overview" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300 rounded-t-xl">
+                    <span class="hidden sm:inline">📍 </span>概要
+                </button>
+                <button data-tab="tab-spots" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">🗼 </span>観光
+                </button>
+                <button data-tab="tab-food" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">🍜 </span>食事
+                </button>
+                <button data-tab="tab-restaurants" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">🍽️ </span>レストラン
+                </button>
+                <button data-tab="tab-transport" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">🚊 </span>交通
+                </button>
+                <button data-tab="tab-money" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">💰 </span>費用
+                </button>
+                <button data-tab="tab-tips" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">💡 </span>注意点
+                </button>
+                <button data-tab="tab-itinerary" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">📅 </span>旅程例
+                </button>
+                <button data-tab="tab-preparation" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">✅ </span>事前準備
+                </button>
+                <button data-tab="tab-laundry" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">👕 </span>洗濯
+                </button>
+                <button data-tab="tab-towels" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300">
+                    <span class="hidden sm:inline">🏊 </span>タオル
+                </button>
+                <button data-tab="tab-checklist" class="tab-button flex-grow sm:flex-grow-0 p-4 text-center transition-all duration-300 rounded-t-xl">
+                    <span class="hidden sm:inline">🎒 </span>持ち物
+                </button>
+            </nav>
+        </div>
 
-                <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-2xl mb-8">
-                    <h3 class="font-bold text-xl mb-4 text-purple-800">🏨 アロフト・クアラルンプールについて</h3>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-semibold text-purple-700 mb-3">🌟 ホテルの特徴</h4>
-                            <ul class="space-y-2 text-sm text-gray-700">
-                                <li>• モダンでスタイリッシュなデザインホテル</li>
-                                <li>• KLセントラル駅から徒歩圏内の好立地</li>
-                                <li>• 家族向けの広々とした客室</li>
-                                <li>• 屋上プールとバーが人気</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-purple-700 mb-3">🎯 ホテル内での楽しみ方</h4>
-                            <ul class="space-y-2 text-sm text-gray-700">
-                                <li>• <strong>屋上プール:</strong> 昼は家族でプール、夕方はサンセットタイム</li>
-                                <li>• <strong>MAIバー:</strong> 夜景を楽しめる屋上バー</li>
-                                <li>• <strong>Nook:</strong> 24時間営業のカジュアルダイニング</li>
-                            </ul>
-                        </div>
+        <main>
+            <!-- 概要 -->
+            <div id="tab-overview" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🏙️</span>
+                        <h2 class="text-3xl font-bold text-blue-600">クアラルンプール概要</h2>
                     </div>
-                </div>
 
-                <p class="mb-6 text-lg leading-relaxed">都会的な魅力と豊かな多文化が共存するクアラルンプール。物価が安く、美味しいグルメや見応えのある観光スポット、自然体験、テーマパークでの家族の楽しい時間が満載です。バード・パークやバタフライ・パークでの動物との触れ合い、サンウェイラグーンでのスリル満点体験、南国フルーツの味覚体験など、異国情緒あふれる活気ある街並みを家族で体験できます。</p>
-                
-                <div class="grid md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
-                        <h3 class="font-bold text-lg mb-2 text-blue-800">🌏 多様な文化</h3>
-                        <p class="text-sm text-blue-700">マレー系、中国系、インド系の文化が混ざり合い、ユニークな雰囲気を醸し出しています。</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
-                        <h3 class="font-bold text-lg mb-2 text-green-800">💵 物価の安さ</h3>
-                        <p class="text-sm text-green-700">ローカルフードは日本の約1/3。5つ星ホテルも比較的安価で、コストパフォーマンスが高いです。</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
-                        <h3 class="font-bold text-lg mb-2 text-purple-800">📅 滞在日数目安</h3>
-                        <p class="text-sm text-purple-700">主要スポットだけなら1泊2日でも可能ですが、ゆっくり楽しむなら3泊4日以上がおすすめです。</p>
-                    </div>
-                </div>
-
-                <!-- 準備タイムライン -->
-                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-2xl">
-                    <h3 class="font-bold text-xl mb-4 flex items-center">
-                        <span class="mr-2">📅</span>準備スケジュール（出発8/8まで）
-                    </h3>
-                    <div class="grid md:grid-cols-4 gap-4 text-sm">
-                        <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                            <h4 class="font-semibold mb-2">📋 1ヶ月前（7/8〜）</h4>
-                            <ul class="space-y-1 opacity-90 text-xs">
-                                <li>• MDAC登録</li>
-                                <li>• パスポート確認</li>
-                                <li>• 旅行保険加入</li>
-                            </ul>
-                        </div>
-                        <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                            <h4 class="font-semibold mb-2">📱 3週間前（7/18〜）</h4>
-                            <ul class="space-y-1 opacity-90 text-xs">
-                                <li>• eSIM契約</li>
-                                <li>• アプリダウンロード</li>
-                                <li>• 医療準備</li>
-                            </ul>
-                        </div>
-                        <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                            <h4 class="font-semibold mb-2">💳 2週間前（7/25〜）</h4>
-                            <ul class="space-y-1 opacity-90 text-xs">
-                                <li>• Wiseカード作成</li>
-                                <li>• カード利用通知</li>
-                                <li>• 両替準備</li>
-                            </ul>
-                        </div>
-                        <div class="bg-white bg-opacity-20 p-3 rounded-lg">
-                            <h4 class="font-semibold mb-2">✈️ 1週間前（8/1〜）</h4>
-                            <ul class="space-y-1 opacity-90 text-xs">
-                                <li>• チケット事前購入</li>
-                                <li>• 天気予報チェック</li>
-                                <li>• 最終荷物準備</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 観光スポットセクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-green-600 flex items-center">
-                        <span class="text-4xl mr-4">🏛️</span>主要エリアと観光スポット
-                    </h2>
-                </div>
-                
-                <div class="bg-green-50 p-4 rounded-xl mb-6">
-                    <p class="text-green-800">観光スポットはチャイナタウン周辺に集中しているため、このエリアでの滞在が便利です。</p>
-                </div>
-
-                <div class="space-y-6">
-                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl shadow-md">
-                        <h3 class="font-semibold text-xl text-blue-700 flex items-center mb-4">
-                            <span class="mr-3 text-2xl">🏢</span>KLCCエリア
-                        </h3>
-                        <div class="space-y-4">
-                            <div class="p-4 bg-white bg-opacity-50 rounded-lg border-l-4 border-blue-400">
-                                <strong class="text-blue-700">ペトロナスツインタワー:</strong> 
-                                <span class="text-gray-700">KLの象徴。夜のライトアップと噴水ショーは必見。</span>
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-2xl mb-8">
+                        <h3 class="font-bold text-xl mb-4 text-purple-800">🏨 アロフト・クアラルンプールについて</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-purple-700 mb-3">🌟 ホテルの特徴</h4>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li>• モダンでスタイリッシュなデザインホテル</li>
+                                    <li>• KLセントラル駅から徒歩圏内の好立地</li>
+                                    <li>• 家族向けの広々とした客室</li>
+                                    <li>• 屋上プールとバーが人気</li>
+                                </ul>
                             </div>
-                            <div class="p-4 bg-white bg-opacity-50 rounded-lg border-l-4 border-blue-400">
-                                <strong class="text-blue-700">スリアKLCC:</strong> 
-                                <span class="text-gray-700">タワー直結の大型モール。ショッピングや食事に便利。</span>
-                            </div>
-                            <div class="p-4 bg-white bg-opacity-50 rounded-lg border-l-4 border-blue-400">
-                                <strong class="text-blue-700">KLCC公園:</strong> 
-                                <span class="text-gray-700">タワーを背景にした写真撮影に最適。噴水ショーもここから楽しめます。</span>
+                            <div>
+                                <h4 class="font-semibold text-purple-700 mb-3">🎯 ホテル内での楽しみ方</h4>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li>• <strong>屋上プール:</strong> 昼は家族でプール、夕方はサンセットタイム</li>
+                                    <li>• <strong>MAIバー:</strong> 夜景を楽しめる屋上バー</li>
+                                    <li>• <strong>Nook:</strong> 24時間営業のカジュアルダイニング</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-xl shadow-md">
-                        <h3 class="font-semibold text-xl text-red-700 flex items-center mb-4">
-                            <span class="mr-3 text-2xl">🏮</span>チャイナタウンエリア
-                        </h3>
-                        <div class="space-y-4">
-                            <div class="p-4 bg-white bg-opacity-50 rounded-lg border-l-4 border-red-400">
-                                <strong class="text-red-700">ペタリンストリート:</strong> 
-                                <span class="text-gray-700">屋台や雑貨店が並ぶアーケード街。カフェも多い。</span>
-                            </div>
-                            <div class="p-4 bg-white bg-opacity-50 rounded-lg border-l-4 border-red-400">
-                                <strong class="text-red-700">セントラルマーケット:</strong> 
-                                <span class="text-gray-700">お土産探しに最適。「なまこ石鹸」が人気。</span>
-                            </div>
-                            <div class="p-4 bg-white bg-opacity-50 rounded-lg border-l-4 border-red-400">
-                                <strong class="text-red-700">関帝廟 & スリ・マハ・マリアマン寺院:</strong> 
-                                <span class="text-gray-700">中国寺院とヒンドゥー教寺院が隣接し、多文化を体感できます。</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-8 bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-6 rounded-2xl">
-                    <h3 class="font-bold text-xl mb-4">💡 この旅程のポイント</h3>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-semibold mb-2">🏨 ホテル活用術</h4>
-                            <ul class="text-sm space-y-1 opacity-90">
-                                <li>• プールタイムを毎日確保で家族リラックス</li>
-                                <li>• Nookで気軽な食事、時差ぼけ対策にも</li>
-                                <li>• 荷物預かりサービスを最終日に活用</li>
-                                <li>• 屋上バーで大人の時間も確保</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold mb-2">👨‍👩‍👧‍👦 家族旅行のコツ</h4>
-                            <ul class="text-sm space-y-1 opacity-90">
-                                <li>• 午後のスコール時間はホテルやモール内で過ごす</li>
-                                <li>• サンウェイラグーンで思いっきり遊ぶ1日を確保</li>
-                                <li>• バード・パーク、バタフライ・パークで自然体験</li>
-                                <li>• フルーツ体験で南国の味覚を満喫</li>
-                                <li>• 移動は余裕を持ったスケジュール</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 食事セクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-yellow-600 flex items-center">
-                        <span class="text-4xl mr-4">🍜</span>食事
-                    </h2>
-                </div>
-                
-                <p class="mb-6 text-lg leading-relaxed">マレー、中華、インド料理が融合した多様な食文化が魅力です。</p>
-                
-                <div class="grid lg:grid-cols-2 gap-8">
-                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-4 text-yellow-800">🍽️ 定番グルメ</h3>
-                        <ul class="card-list space-y-3">
-                            <li><strong>ナシレマ:</strong> ココナッツミルクで炊いたご飯が特徴の国民食。</li>
-                            <li><strong>ラクサ:</strong> スパイシーな麺料理。店によって味が全く異なります。</li>
-                            <li><strong>カヤトースト:</strong> コピーティアム（カフェ）での朝食の定番。</li>
-                            <li><strong>チキンライス:</strong> 鶏の旨味が染みたご飯が絶品。</li>
-                        </ul>
-                    </div>
+                    <p class="mb-6 text-lg leading-relaxed">都会的な魅力と豊かな多文化が共存するクアラルンプール。物価が安く、美味しいグルメや見応えのある観光スポット、自然体験、テーマパークでの家族の楽しい時間が満載です。KLタワーからの絶景、本格的なモスクツアー、サンウェイラグーンでのスリル満点体験、南国フルーツの味覚体験など、異国情緒あふれる活気ある街並みを家族で体験できます。</p>
                     
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-4 text-blue-800">🏪 食事場所</h3>
-                        <ul class="card-list space-y-3">
-                            <li><strong>フードコート:</strong> モール内にあり清潔で快適。</li>
-                            <li><strong>ローカル食堂:</strong> 安くて美味しいですが、現金のみの店も多いです。</li>
-                            <li><strong>有名チェーン店:</strong> Oriental Kopi, Madam Kwan'sなど。</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- レストランガイドセクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-orange-600 flex items-center">
-                        <span class="text-4xl mr-4">🍽️</span>厳選レストランガイド
-                    </h2>
-                </div>
-                
-                <div class="bg-orange-50 p-4 rounded-xl mb-8">
-                    <p class="text-orange-800 font-semibold">🥘 マレーシア料理から中華、インド料理まで！現地で絶対訪れたい名店を完全ガイド</p>
-                </div>
-
-                <div class="space-y-8">
-                    <!-- おすすめレストラン詳細 -->
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-6 text-emerald-800 flex items-center">
-                            <span class="mr-2">⭐</span>絶対訪れたい名店ベスト5
-                        </h3>
-                        <div class="space-y-6">
-                            <!-- Madam Kwan's -->
-                            <div class="bg-white bg-opacity-80 p-6 rounded-xl shadow-md">
-                                <h4 class="font-semibold text-xl text-emerald-700 flex items-center mb-4">
-                                    <span class="mr-3 text-2xl">🏆</span>マダム・クワンズ（Madam Kwan's）- マレーシア料理の代表店
-                                </h4>
-                                <div class="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h5 class="font-semibold text-emerald-600 mb-2">🍽️ おすすめメニュー</h5>
-                                        <ul class="text-sm text-gray-700 space-y-1">
-                                            <li>• <strong>ナシレマ（RM21）:</strong> 国民食、ココナッツライス</li>
-                                            <li>• <strong>ナシボジャリ（RM29）:</strong> オリジナル三色ライス</li>
-                                            <li>• <strong>ペナン風アッサムラクサ:</strong> 本格酸味スープ麺</li>
-                                            <li>• <strong>サテー:</strong> マレー風串焼き</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-semibold text-emerald-600 mb-2">📍 店舗情報</h5>
-                                        <ul class="text-sm text-gray-700 space-y-1">
-                                            <li>• <strong>スリアKLCC店:</strong> 7:30-22:00</li>
-                                            <li>• <strong>パビリオンKL店:</strong> 10:00-22:30</li>
-                                            <li>• <strong>ミッドバレー店:</strong> 7:30-22:00</li>
-                                            <li>• <strong>TRX店:</strong> 最新店舗（2023年開店）</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="bg-emerald-50 p-3 rounded-lg mt-4">
-                                    <p class="text-emerald-700 text-sm"><strong>💡 攻略ポイント:</strong> 清潔なモール内で安心してマレーシア料理を体験。初心者にも最適で、観光途中に立ち寄りやすい。ランチタイムは行列必至。</p>
-                                </div>
-                            </div>
-
-                            <!-- Hai Kah Lang -->
-                            <div class="bg-white bg-opacity-80 p-6 rounded-xl shadow-md">
-                                <h4 class="font-semibold text-xl text-blue-700 flex items-center mb-4">
-                                    <span class="mr-3 text-2xl">🦐</span>ハイ・カー・ラン（Hai Kah Lang）- ミシュラン海鮮麺
-                                </h4>
-                                <div class="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h5 class="font-semibold text-blue-600 mb-2">🥢 名物メニュー</h5>
-                                        <ul class="text-sm text-gray-700 space-y-1">
-                                            <li>• <strong>混合海鮮粉（RM20-30）:</strong> ミシュラン推薦麺</li>
-                                            <li>• <strong>魚頭米粉:</strong> 七星班の魚頭スープ</li>
-                                            <li>• <strong>蟹粥（Crab Porridge）:</strong> 新鮮蟹の旨味</li>
-                                            <li>• <strong>各種海鮮:</strong> エビ・カニ・イカ・貝類</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-semibold text-blue-600 mb-2">⏰ 営業・アクセス</h5>
-                                        <ul class="text-sm text-gray-700 space-y-1">
-                                            <li>• <strong>TRX店:</strong> 8:00-深夜2:00</li>
-                                            <li>• <strong>本店（チェラス）:</strong> 8:00-17:00</li>
-                                            <li>• <strong>場所:</strong> Jalan Utara, Off Jalan Imbi</li>
-                                            <li>• <strong>予算:</strong> 1人RM20-40（600-1,200円）</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="bg-blue-50 p-3 rounded-lg mt-4">
-                                    <p class="text-blue-700 text-sm"><strong>🌟 特徴:</strong> 2022年ミシュランビブグルマン獲得。スープに紹興酒を使用（苦手な場合は抜き可）。週末は混雑するため早めの訪問推奨。</p>
-                                </div>
-                            </div>
-
-                            <!-- TG's Bistro -->
-                            <div class="bg-white bg-opacity-80 p-6 rounded-xl shadow-md">
-                                <h4 class="font-semibold text-xl text-orange-700 flex items-center mb-4">
-                                    <span class="mr-3 text-2xl">🫓</span>TG's Bistro - 24時間営業のママック
-                                </h4>
-                                <div class="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h5 class="font-semibold text-orange-600 mb-2">🥞 インスタ映えメニュー</h5>
-                                        <ul class="text-sm text-gray-700 space-y-1">
-                                            <li>• <strong>ロティ・ティシュ:</strong> 高さ30-50cmの巨大パン</li>
-                                            <li>• <strong>バターチキンカレー:</strong> 濃厚トマトベース</li>
-                                            <li>• <strong>チーズガーリックナン:</strong> 焼き立てが絶品</li>
-                                            <li>• <strong>タンドリーチキン:</strong> スパイス香る</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h5 class="font-semibold text-orange-600 mb-2">💰 価格・時間</h5>
-                                        <ul class="text-sm text-gray-700 space-y-1">
-                                            <li>• <strong>営業:</strong> 24時間無休</li>
-                                            <li>• <strong>ロティ・チャナイ:</strong> RM1-2</li>
-                                            <li>• <strong>カレー各種:</strong> RM7-15</li>
-                                            <li>• <strong>予算:</strong> 1人RM10-20（300-600円）</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="bg-orange-50 p-3 rounded-lg mt-4">
-                                    <p class="text-orange-700 text-sm"><strong>🎯 利用シーン:</strong> 深夜の小腹満たし、SNS映えする朝食体験。オープンエア席でローカル感満点。ロティ・ティシュは昼以降注文可能。</p>
-                                </div>
-                            </div>
+                    <div class="grid md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2 text-blue-800">🗼 KLタワーの魅力</h3>
+                            <p class="text-sm text-blue-700">421mの高さから360度パノラマビューを楽しめる展望台。夜景は特に絶景で、家族写真の撮影にも最適です。</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2 text-green-800">🕌 本格モスクツアー</h3>
+                            <p class="text-sm text-green-700">Veltraの専門ガイド付きツアーで、プトラモスクをはじめとする美しいモスクを安心して見学できます。</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+                            <h3 class="font-bold text-lg mb-2 text-purple-800">📅 滞在日数目安</h3>
+                            <p class="text-sm text-purple-700">主要スポットだけなら3泊4日でも可能ですが、ゆっくり楽しむなら6泊7日がベストです。</p>
                         </div>
                     </div>
 
-                    <!-- 料理ジャンル別ガイド -->
-                    <div class="bg-gradient-to-r from-yellow-50 to-orange-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-6 text-yellow-800 flex items-center">
-                            <span class="mr-2">🌶️</span>料理ジャンル別完全ガイド
+                    <!-- 緊急時対応マニュアル -->
+                    <div class="mt-8 bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-2xl border-2 border-red-200">
+                        <h3 class="font-bold text-xl mb-4 text-red-800 flex items-center">
+                            <span class="mr-2">🚨</span>緊急時対応マニュアル
                         </h3>
                         <div class="grid md:grid-cols-3 gap-6">
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-l-4 border-yellow-400">
-                                <h4 class="font-bold text-yellow-700 mb-3">🇲🇾 マレーシア料理</h4>
-                                <ul class="text-sm text-gray-700 space-y-2">
-                                    <li><strong>ナシレマ:</strong> ココナッツライス（国民食）</li>
-                                    <li><strong>ラクサ:</strong> スパイシー麺類</li>
-                                    <li><strong>ミーゴレン:</strong> 焼きそば</li>
-                                    <li><strong>サテー:</strong> 串焼きスタイル</li>
-                                </ul>
+                            <div>
+                                <h4 class="font-semibold text-red-700 mb-2">🏥 病気・怪我の場合</h4>
+                                <ol class="text-sm space-y-1 text-gray-700 list-decimal list-inside">
+                                    <li>まず安全な場所に移動</li>
+                                    <li>症状が軽い：薬局で薬購入</li>
+                                    <li>症状が重い：999番で救急車</li>
+                                    <li>保険会社に連絡（24時間対応）</li>
+                                    <li>必要に応じて日本領事館に連絡</li>
+                                </ol>
                             </div>
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-l-4 border-red-400">
-                                <h4 class="font-bold text-red-700 mb-3">🥢 中華料理</h4>
-                                <ul class="text-sm text-gray-700 space-y-2">
-                                    <li><strong>海鮮麺:</strong> 新鮮魚介スープ</li>
-                                    <li><strong>中華粥:</strong> 朝食の定番</li>
-                                    <li><strong>福建麺:</strong> 黒い醤油ダレ</li>
-                                    <li><strong>点心:</strong> 飲茶スタイル</li>
-                                </ul>
+                            <div>
+                                <h4 class="font-semibold text-red-700 mb-2">💼 盗難・紛失の場合</h4>
+                                <ol class="text-sm space-y-1 text-gray-700 list-decimal list-inside">
+                                    <li>まず身の安全を確保</li>
+                                    <li>最寄りの警察署に届出</li>
+                                    <li>パスポート紛失：日本領事館へ</li>
+                                    <li>カード類：即座に利用停止</li>
+                                    <li>保険会社に被害報告</li>
+                                </ol>
                             </div>
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-l-4 border-green-400">
-                                <h4 class="font-bold text-green-700 mb-3">🍛 インド料理</h4>
-                                <ul class="text-sm text-gray-700 space-y-2">
-                                    <li><strong>ロティ・チャナイ:</strong> パンケーキ風</li>
-                                    <li><strong>バターチキン:</strong> トマトベースカレー</li>
-                                    <li><strong>ナン:</strong> 窯焼きパン</li>
-                                    <li><strong>タンドリー:</strong> スパイスグリル</li>
-                                </ul>
+                            <div>
+                                <h4 class="font-semibold text-red-700 mb-2">🌀 自然災害の場合</h4>
+                                <ol class="text-sm space-y-1 text-gray-700 list-decimal list-inside">
+                                    <li>ホテル・建物内で待機</li>
+                                    <li>日本領事館からの情報確認</li>
+                                    <li>航空会社に運航状況確認</li>
+                                    <li>家族・知人に安否連絡</li>
+                                    <li>外務省海外安全情報を確認</li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="mt-6 bg-red-100 p-4 rounded-lg">
+                            <h4 class="font-semibold text-red-700 mb-2">🚨 緊急時連絡先（メモ・スマホ保存）</h4>
+                            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p><strong>在マレーシア日本国大使館：</strong></p>
+                                    <p>+60-3-2177-2600（代表）</p>
+                                    <p>緊急時：+60-19-711-7290</p>
+                                </div>
+                                <div>
+                                    <p><strong>マレーシア緊急通報：</strong></p>
+                                    <p>警察：999</p>
+                                    <p>救急・消防：994</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- 交通手段セクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-purple-600 flex items-center">
-                        <span class="text-4xl mr-4">🚊</span>交通手段
-                    </h2>
+            <!-- 観光スポット -->
+            <div id="tab-spots" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🗼</span>
+                        <h2 class="text-3xl font-bold text-green-600">主要エリアと観光スポット</h2>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-xl mb-6">
+                        <p class="text-green-800">KLタワーを中心とした観光とVeltraの本格モスクツアーで、マレーシアの文化と絶景を堪能しましょう。</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <!-- KLタワーエリア -->
+                        <details class="group bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-blue-700 flex items-center">
+                                <span class="mr-3 text-2xl">🗼</span>
+                                KLタワー（Menara Kuala Lumpur）
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-blue-400">
+                                    <strong class="text-blue-700">展望台（Sky Deck）:</strong> 
+                                    <span class="text-gray-700">地上276mから360度パノラマビュー。KL市内を一望できる絶景スポット。</span>
                 </div>
-                
-                <div class="space-y-6">
-                    <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-4 text-purple-800">📱 Grab (タクシー配車アプリ)</h3>
-                        <p class="mb-4 text-purple-700">最も推奨される移動手段。事前に料金が確定し、キャッシュレス決済も可能で安心です。</p>
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-blue-400">
+                                    <strong class="text-blue-700">Sky Box:</strong> 
+                                    <span class="text-gray-700">ガラス張りの突き出し展望台。スリル満点の空中体験ができます。</span>
+                                </div>
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-blue-400">
+                                    <strong class="text-blue-700">料金・営業時間:</strong> 
+                                    <span class="text-gray-700">大人RM105、子供RM65。9:00-22:00営業。事前予約推奨。</span>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded-lg">
+                                    <p class="text-blue-800 text-sm"><strong>💡 家族のポイント:</strong> 夕方17:00頃の訪問がおすすめ。昼間の景色から夕焼け、夜景への移り変わりが楽しめます。お子様には安全ハーネス付きのSky Boxも人気です。</p>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Veltraモスクツアー -->
+                        <details class="group bg-gradient-to-r from-emerald-50 to-emerald-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-emerald-700 flex items-center">
+                                <span class="mr-3 text-2xl">🕌</span>
+                                Veltraモスクツアー（プライベートガイド付き）
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-emerald-400">
+                                    <strong class="text-emerald-700">ツアー詳細:</strong> 
+                                    <span class="text-gray-700">プトラモスクをはじめとする美しいモスクを専門ガイドと巡る本格ツアー</span>
+                                </div>
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-emerald-400">
+                                    <strong class="text-emerald-700">料金・時間:</strong> 
+                                    <span class="text-gray-700">MYR540（10%割引適用後）、9:00集合-16:00終了（約7時間）</span>
+                                </div>
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-emerald-400">
+                                    <strong class="text-emerald-700">予約サイト:</strong> 
+                                    <span class="text-gray-700"><a href="https://www.veltra.com/jp/asia/malaysia/kuala_lumpur/a/160599" class="text-blue-600 hover:underline">Veltra予約ページ</a></span>
+                                </div>
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-emerald-400">
+                                    <strong class="text-emerald-700">催行期間:</strong> 
+                                    <span class="text-gray-700">2025年8月1日〜8月24日（旅行期間に完全対応！）</span>
+                                </div>
+                                <div class="bg-emerald-50 p-3 rounded-lg">
+                                    <p class="text-emerald-800 text-sm"><strong>🎯 ツアーの魅力:</strong> 日本語ガイド付きで、モスクの歴史や文化を詳しく学べます。服装レンタルも含まれているので、準備は不要。家族での文化体験に最適です。</p>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="group bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-red-700 flex items-center">
+                                <span class="mr-3 text-2xl">🏮</span>
+                                チャイナタウンエリア
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-red-400">
+                                    <strong class="text-red-700">ペタリンストリート:</strong> 
+                                    <span class="text-gray-700">屋台や雑貨店が並ぶアーケード街。カフェも多い。</span>
+                                </div>
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-red-400">
+                                    <strong class="text-red-700">セントラルマーケット:</strong> 
+                                    <span class="text-gray-700">お土産探しに最適。「なまこ石鹸」が人気。</span>
+                                </div>
+                                <div class="p-4 bg-white/50 rounded-lg border-l-4 border-red-400">
+                                    <strong class="text-red-700">関帝廟 & スリ・マハ・マリアマン寺院:</strong> 
+                                    <span class="text-gray-700">中国寺院とヒンドゥー教寺院が隣接し、多文化を体感できます。</span>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="mt-8 bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-6 rounded-2xl">
+                        <h3 class="font-bold text-xl mb-4">💡 KLタワー＆モスクツアー版のポイント</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold mb-2">🗼 KLタワーの楽しみ方</h4>
+                                <ul class="text-sm space-y-1 opacity-90">
+                                    <li>• 360度パノラマビューで絶景撮影</li>
+                                    <li>• Sky Boxでスリル体験</li>
+                                    <li>• 夕方訪問で昼夜両方の景色を堪能</li>
+                                    <li>• KLの街並みを一望、方角確認にも便利</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">🕌 Veltraモスクツアーの価値</h4>
+                                <ul class="text-sm space-y-1 opacity-90">
+                                    <li>• 専門ガイドによる詳しい文化解説</li>
+                                    <li>• 適切な服装レンタルで安心参加</li>
+                                    <li>• プトラモスクの美しいピンク建築</li>
+                                    <li>• 家族での貴重な文化体験</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-white/20 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">📅 特別体験の日程配置</h4>
+                            <ul class="text-sm space-y-1 opacity-90">
+                                <li>• <strong>Day 2 - KLタワー:</strong> 到着翌日に市内を一望、方向感覚を掴む</li>
+                                <li>• <strong>Day 4 - Veltraモスクツアー:</strong> 平日の本格文化体験でゆっくり見学</li>
+                                <li>• <strong>Day 5 - サンウェイラグーン:</strong> 文化体験の翌日はテーマパークで大はしゃぎ</li>
+                                <li>• <strong>組み合わせ効果:</strong> 高所からの展望→文化体験→エンターテイメントの完璧な流れ</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 食事 -->
+            <div id="tab-food" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🍜</span>
+                        <h2 class="text-3xl font-bold text-yellow-600">食事</h2>
+                    </div>
+                    <p class="mb-6 text-lg leading-relaxed">マレー、中華、インド料理が融合した多様な食文化が魅力です。</p>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-yellow-800">🍽️ 定番グルメ</h3>
+                            <ul class="card-list space-y-3">
+                                <li><strong>ナシレマ:</strong> ココナッツミルクで炊いたご飯が特徴の国民食。</li>
+                                <li><strong>ラクサ:</strong> スパイシーな麺料理。店によって味が全く異なります。</li>
+                                <li><strong>カヤトースト:</strong> コピーティアム（カフェ）での朝食の定番。</li>
+                                <li><strong>チキンライス:</strong> 鶏の旨味が染みたご飯が絶品。</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-blue-800">🏪 食事場所</h3>
+                            <ul class="card-list space-y-3">
+                                <li><strong>フードコート:</strong> モール内にあり清潔で快適。</li>
+                                <li><strong>ローカル食堂:</strong> 安くて美味しいですが、現金のみの店も多いです。</li>
+                                <li><strong>有名チェーン店:</strong> Oriental Kopi, Madam Kwan'sなど。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- レストランガイド -->
+            <div id="tab-restaurants" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🍽️</span>
+                        <h2 class="text-3xl font-bold text-orange-600">厳選レストランガイド</h2>
                     </div>
                     
-                    <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-4 text-green-800">🚇 公共交通機関</h3>
-                        <p class="mb-4 text-green-700">料金が非常に安く、主要観光地を結んでいます。Touch 'n Go カードがあると便利です。</p>
+                    <div class="bg-orange-50 p-4 rounded-xl mb-8">
+                        <p class="text-orange-800 font-semibold">🥘 マレーシア料理から中華、インド料理まで！現地で絶対訪れたい名店を完全ガイド</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- おすすめレストラン詳細 -->
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-6 text-emerald-800 flex items-center">
+                                <span class="mr-2">⭐</span>絶対訪れたい名店ベスト5
+                            </h3>
+                            <div class="space-y-6">
+                                <!-- Madam Kwan's -->
+                                <details class="group bg-white/80 p-6 rounded-xl shadow-md">
+                                    <summary class="font-semibold text-xl cursor-pointer group-hover:text-emerald-700 flex items-center">
+                                        <span class="mr-3 text-2xl">🏆</span>
+                                        マダム・クワンズ（Madam Kwan's）- マレーシア料理の代表店
+                                        <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                                    </summary>
+                                    <div class="mt-6 space-y-4">
+                                        <div class="grid md:grid-cols-2 gap-6">
+                                            <div>
+                                                <h5 class="font-semibold text-emerald-600 mb-2">🍽️ おすすめメニュー</h5>
+                                                <ul class="text-sm text-gray-700 space-y-1">
+                                                    <li>• <strong>ナシレマ（RM21）:</strong> 国民食、ココナッツライス</li>
+                                                    <li>• <strong>ナシボジャリ（RM29）:</strong> オリジナル三色ライス</li>
+                                                    <li>• <strong>ペナン風アッサムラクサ:</strong> 本格酸味スープ麺</li>
+                                                    <li>• <strong>サテー:</strong> マレー風串焼き</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <h5 class="font-semibold text-emerald-600 mb-2">📍 店舗情報</h5>
+                                                <ul class="text-sm text-gray-700 space-y-1">
+                                                    <li>• <strong>スリアKLCC店:</strong> 7:30-22:00</li>
+                                                    <li>• <strong>パビリオンKL店:</strong> 10:00-22:30</li>
+                                                    <li>• <strong>ミッドバレー店:</strong> 7:30-22:00</li>
+                                                    <li>• <strong>TRX店:</strong> 最新店舗（2023年開店）</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </details>
+
+                                <!-- Oriental Kopi -->
+                                <details class="group bg-white/80 p-6 rounded-xl shadow-md">
+                                    <summary class="font-semibold text-xl cursor-pointer group-hover:text-blue-700 flex items-center">
+                                        <span class="mr-3 text-2xl">☕</span>
+                                        オリエンタル・コピ（Oriental Kopi）- コピーティアムチェーン
+                                        <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                                    </summary>
+                                    <div class="mt-6 space-y-4">
+                                        <div class="grid md:grid-cols-2 gap-6">
+                                            <div>
+                                                <h5 class="font-semibold text-blue-600 mb-2">🥐 朝食メニュー</h5>
+                                                <ul class="text-sm text-gray-700 space-y-1">
+                                                    <li>• <strong>カヤトースト（RM3.5）:</strong> 定番朝食セット</li>
+                                                    <li>• <strong>ハーフボイルドエッグ:</strong> 生卵風温泉卵</li>
+                                                    <li>• <strong>コピ・オー:</strong> マレーシア風コーヒー</li>
+                                                    <li>• <strong>ミロ・アイス:</strong> 子供に人気の冷たいチョコレート飲料</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <h5 class="font-semibold text-blue-600 mb-2">⏰ アクセス・営業</h5>
+                                                <ul class="text-sm text-gray-700 space-y-1">
+                                                    <li>• <strong>KLセントラル店:</strong> 6:30-23:00</li>
+                                                    <li>• <strong>アロフト徒歩圏:</strong> 約3分</li>
+                                                    <li>• <strong>特徴:</strong> 24時間営業店舗あり</li>
+                                                    <li>• <strong>予算:</strong> 1人RM10-15（300-450円）</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
+
+            <!-- 交通手段 -->
+            <div id="tab-transport" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🚊</span>
+                        <h2 class="text-3xl font-bold text-purple-600">交通手段</h2>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-purple-800">📱 Grab (タクシー配車アプリ)</h3>
+                            <p class="mb-4 text-purple-700">最も推奨される移動手段。事前に料金が確定し、キャッシュレス決済も可能で安心です。</p>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-green-800">🚇 公共交通機関</h3>
+                            <p class="mb-4 text-green-700">料金が非常に安く、主要観光地を結んでいます。Touch 'n Go カードがあると便利です。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
-            <!-- 費用と通貨セクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-indigo-600 flex items-center">
-                        <span class="text-4xl mr-4">💰</span>費用と通貨
-                    </h2>
-                </div>
-                
-                <ul class="space-y-4 card-list">
-                    <li><strong>為替レート:</strong> 1マレーシアリンギット(MYR) ≒ 32円〜35円 (2025年1月〜6月時点)</li>
-                    <li><strong>両替:</strong> 空港より市街地の両替所の方がレートが良いです</li>
-                    <li><strong>支払い:</strong> モール等はカード可、屋台やローカル店は現金が主流</li>
-                    <li><strong>Wiseカード:</strong> 事前にリンギットに両替でき、現地ATMでの引き出しにも便利</li>
-                </ul>
-            </section>
-
-            <!-- 注意点セクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-pink-600 flex items-center">
-                        <span class="text-4xl mr-4">💡</span>その他役立つ情報と注意点
-                    </h2>
-                </div>
-                
-                <div class="space-y-6">
-                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl">
-                        <h3 class="font-semibold text-xl text-blue-700 flex items-center mb-4">
-                            <span class="mr-3 text-2xl">🌤️</span>気候と服装
-                        </h3>
-                        <ul class="space-y-2 text-gray-700 text-sm">
-                            <li>• 年間を通して高温多湿</li>
-                            <li>• 午後にスコール（短時間の強い雨）が多い</li>
-                            <li>• 屋内は冷房が非常に強いので、薄手の羽織り物が必要</li>
-                            <li>• 日焼け止め、サングラス、折りたたみ傘は必須</li>
-                        </ul>
+            <!-- 費用と通貨 -->
+            <div id="tab-money" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">💰</span>
+                        <h2 class="text-3xl font-bold text-indigo-600">費用と通貨</h2>
                     </div>
                     
-                    <div class="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl">
-                        <h3 class="font-semibold text-xl text-green-700 flex items-center mb-4">
-                            <span class="mr-3 text-2xl">🛡️</span>治安と安全
-                        </h3>
-                        <ul class="space-y-2 text-gray-700 text-sm">
-                            <li>• 比較的安全ですが、スリやひったくりには注意</li>
-                            <li>• 夜間の一人歩きや人通りの少ない道は避ける</li>
-                            <li>• 詐欺にも注意。知らない人を安易に信用しない</li>
+                    <!-- Veltraツアー費用追加 -->
+                    <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 p-6 rounded-2xl mb-6">
+                        <h3 class="font-bold text-xl mb-4 text-emerald-800">🕌 Veltraモスクツアー費用</h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li>• <strong>ツアー料金:</strong> MYR540（10%割引適用後、通常MYR600）</li>
+                            <li>• <strong>日本円換算:</strong> 約17,280円〜18,900円（レート32-35円で計算）</li>
+                            <li>• <strong>4人家族想定:</strong> 約69,120円〜75,600円（全員参加の場合）</li>
+                            <li>• <strong>支払い方法:</strong> クレジットカード、ATM、銀行振込対応</li>
                         </ul>
                     </div>
-                </div>
-            </section>
 
-            <!-- 旅程モデルセクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-teal-600 flex items-center">
-                        <span class="text-4xl mr-4">📅</span>6泊7日 家族旅行モデルプラン
-                    </h2>
-                </div>
-                
-                <div class="bg-gradient-to-r from-teal-50 to-blue-50 p-6 rounded-2xl mb-8">
-                    <h3 class="font-bold text-xl mb-4 text-teal-800">✈️ 旅行概要</h3>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="space-y-3">
-                            <div class="bg-white bg-opacity-70 p-4 rounded-lg">
-                                <h4 class="font-semibold text-teal-700 mb-2">📅 旅行期間</h4>
-                                <p class="text-sm text-gray-700">2025年8月8日（金）〜 8月14日（木）<br>6泊7日</p>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-4 rounded-lg">
-                                <h4 class="font-semibold text-teal-700 mb-2">👨‍👩‍👧‍👦 旅行者</h4>
-                                <p class="text-sm text-gray-700">4人家族</p>
-                            </div>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="bg-white bg-opacity-70 p-4 rounded-lg">
-                                <h4 class="font-semibold text-teal-700 mb-2">🏨 宿泊先</h4>
-                                <p class="text-sm text-gray-700">アロフト・クアラルンプール<br>（セントラル駅エリア）</p>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-4 rounded-lg">
-                                <h4 class="font-semibold text-teal-700 mb-2">✈️ フライト</h4>
-                                <p class="text-sm text-gray-700">関空 ⇄ クアラルンプール国際空港</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-6">
-                    <!-- Day 1-7の詳細な旅程を表示 -->
-                    <div class="bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-xl">
-                        <h3 class="font-semibold text-xl text-red-700 flex items-center mb-4">
-                            <span class="mr-3 text-2xl">🛬</span>Day 1 - 8月8日（金）到着日
-                        </h3>
-                        <div class="bg-white bg-opacity-70 p-4 rounded-lg">
-                            <h4 class="font-semibold text-red-700 mb-2">✈️ フライト・移動</h4>
-                            <ul class="text-sm text-gray-700 space-y-1">
-                                <li><strong>14:25</strong> 関空発 → <strong>20:25</strong> KLIA着（現地時間）</li>
-                                <li><strong>21:00</strong> 入国手続き・荷物受取</li>
-                                <li><strong>21:30</strong> Grabでホテルへ（約45分）</li>
-                                <li><strong>22:30</strong> アロフト・クアラルンプール到着</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- 他の日程も同様に表示... -->
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl">
-                        <h3 class="font-semibold text-xl text-blue-700 flex items-center mb-4">
-                            <span class="mr-3 text-2xl">🏢</span>Day 2 - 8月9日（土）KLCCエリア観光
-                        </h3>
-                        <div class="grid md:grid-cols-3 gap-4">
-                            <div class="bg-white bg-opacity-70 p-4 rounded-lg">
-                                <h4 class="font-semibold text-blue-700 mb-2">🌅 午前（8:00-12:00）</h4>
-                                <ul class="text-sm text-gray-700 space-y-1">
-                                    <li>8:00 ホテルで朝食</li>
-                                    <li>9:30 LRTでKLCC駅へ</li>
-                                    <li>10:00 ペトロナスツインタワー見学</li>
-                                    <li>11:00 スリアKLCCでショッピング</li>
-                                </ul>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-4 rounded-lg">
-                                <h4 class="font-semibold text-blue-700 mb-2">🍽️ 午後（12:00-18:00）</h4>
-                                <ul class="text-sm text-gray-700 space-y-1">
-                                    <li>12:00 フードコートでランチ</li>
-                                    <li>13:30 KLCC公園で休憩</li>
-                                    <li>15:00 アクアリアKLCC見学</li>
-                                    <li>17:00 カフェで休憩</li>
-                                </ul>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-4 rounded-lg">
-                                <h4 class="font-semibold text-blue-700 mb-2">🌆 夜（18:00-22:00）</h4>
-                                <ul class="text-sm text-gray-700 space-y-1">
-                                    <li>18:00 ホテルでプールタイム</li>
-                                    <li>19:30 Oriental Kopiでディナー</li>
-                                    <li>21:00 MAIバーでサンセット</li>
-                                    <li>22:00 就寝</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 続きの日程もコンパクトに表示 -->
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl">
-                            <h3 class="font-semibold text-xl text-green-700 mb-4">🦜 Day 3 - バトゥ洞窟・バード&バタフライパーク</h3>
-                            <ul class="text-sm text-gray-700 space-y-1">
-                                <li>• Village Park Restaurantで本格ナシレマ朝食</li>
-                                <li>• バトゥ洞窟見学（272段の階段）</li>
-                                <li>• KLバード・パーク（世界最大級）</li>
-                                <li>• KLバタフライ・パーク見学</li>
-                                <li>• チョウキット・マーケットでフルーツ体験</li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl">
-                            <h3 class="font-semibold text-xl text-purple-700 mb-4">🏮 Day 4 - チャイナタウン・文化体験</h3>
-                            <ul class="text-sm text-gray-700 space-y-1">
-                                <li>• コピーティアムでカヤトースト朝食</li>
-                                <li>• 国立モスク見学</li>
-                                <li>• 新峰肉骨茶で絶品バクテーランチ</li>
-                                <li>• チャイナタウン散策・寺院見学</li>
-                                <li>• ジャラン・アローで屋台グルメツアー</li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-gradient-to-r from-teal-50 to-blue-50 p-6 rounded-xl">
-                            <h3 class="font-semibold text-xl text-teal-700 mb-4">🎢 Day 5 - サンウェイラグーン</h3>
-                            <ul class="text-sm text-gray-700 space-y-1">
-                                <li>• 東南アジア最大級のテーマパーク</li>
-                                <li>• ウォーターパークで家族タイム</li>
-                                <li>• アミューズメントパークでライド体験</li>
-                                <li>• 動物園エリアで動物との触れ合い</li>
-                                <li>• サンウェイピラミッドでショッピング</li>
-                            </ul>
-                        </div>
-
-                        <div class="bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-xl">
-                            <h3 class="font-semibold text-xl text-orange-700 mb-4">🌸 Day 6 - プトラモスク・最終日</h3>
-                            <ul class="text-sm text-gray-700 space-y-1">
-                                <li>• プトラモスク（ピンクモスク）見学</li>
-                                <li>• プトラ湖周辺で記念撮影</li>
-                                <li>• ミッドバレー・メガモールで最後のショッピング</li>
-                                <li>• Jalan Imbiで最後のフルーツ体験</li>
-                                <li>• Old China Cafeで最後のディナー</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 事前準備セクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-emerald-600 flex items-center">
-                        <span class="text-4xl mr-4">✅</span>日本出発前の事前準備
-                    </h2>
-                </div>
-                
-                <div class="bg-emerald-50 p-4 rounded-xl mb-8">
-                    <p class="text-emerald-800 font-semibold">📋 準備開始時期の目安：出発の1ヶ月前から順次準備を始めましょう</p>
-                </div>
-
-                <div class="space-y-8">
-                    <!-- 必須書類・手続き -->
-                    <div class="bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-4 text-red-800 flex items-center">
-                            <span class="mr-2">📋</span>必須書類・手続き（1ヶ月前〜）
-                        </h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="font-semibold text-red-700 mb-3">📄 書類の確認</h4>
-                                <ul class="space-y-2 text-sm text-gray-700">
-                                    <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>パスポート残存期間：</strong> 入国時6ヶ月以上必要</li>
-                                    <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>航空券：</strong> e-ticketの印刷またはアプリ保存</li>
-                                    <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>ホテル予約確認書：</strong> 英語版を印刷</li>
-                                    <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>パスポートコピー：</strong> 万が一に備えて複数枚</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-red-700 mb-3">🌐 オンライン手続き</h4>
-                                <ul class="space-y-2 text-sm text-gray-700">
-                                    <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>MDAC登録：</strong> マレーシア・デジタル・アライバル・カード（必須）</li>
-                                    <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>MyEG利用：</strong> 入国審査迅速化（推奨）</li>
-                                    <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>オンラインチェックイン：</strong> 出発24時間前</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 旅行保険・医療準備 -->
-                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-4 text-blue-800 flex items-center">
-                            <span class="mr-2">🏥</span>旅行保険・医療準備（3週間前〜）
-                        </h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h4 class="font-semibold text-blue-700 mb-3">🛡️ 旅行保険</h4>
-                                <ul class="space-y-2 text-sm text-gray-700">
-                                    <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>海外旅行保険加入：</strong> 疾病・傷害・携行品カバー</li>
-                                    <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>家族全員分：</strong> 4人家族の場合は全員分確認</li>
-                                    <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>クレジットカード付帯：</strong> 補償内容・条件を確認</li>
-                                    <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>保険証書：</strong> 英語版をスマホに保存</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-blue-700 mb-3">💊 医療準備</h4>
-                                <ul class="space-y-2 text-sm text-gray-700">
-                                    <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>常備薬：</strong> 普段服用の薬は多めに準備</li>
-                                    <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>下痢止め・整腸剤：</strong> 食べ慣れない食事対策</li>
-                                    <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>解熱鎮痛剤・風邪薬：</strong> 気候変化対策</li>
-                                    <li class="flex items-start"><span class="mr-2 text-blue-600">☐</span><strong>絆創膏・消毒液：</strong> 軽いケガ対策</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 洗濯ガイドセクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-cyan-600 flex items-center">
-                        <span class="text-4xl mr-4">👕</span>アロフト滞在中の洗濯完全ガイド
-                    </h2>
-                </div>
-                
-                <div class="bg-cyan-50 p-4 rounded-xl mb-8">
-                    <p class="text-cyan-800 font-semibold">🧺 6泊7日の滞在を快適に過ごすための洗濯戦略とおすすめ方法をご紹介します</p>
-                </div>
-
-                <div class="space-y-8">
-                    <!-- アロフトホテルの洗濯オプション -->
-                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-6 text-blue-800 flex items-center">
-                            <span class="mr-2">🏨</span>アロフト・クアラルンプールの洗濯オプション
-                        </h3>
-                        <div class="grid md:grid-cols-3 gap-6">
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-l-4 border-blue-400">
-                                <h4 class="font-bold text-blue-700 mb-3 flex items-center">
-                                    <span class="mr-2">🛎️</span>ランドリーサービス（推奨）
-                                </h4>
-                                <ul class="space-y-2 text-sm text-gray-700">
-                                    <li>• <strong>料金:</strong> 1点 15-25MYR（約600-1000円）</li>
-                                    <li>• <strong>仕上がり:</strong> 翌日18:00までに客室へお届け</li>
-                                    <li>• <strong>品質:</strong> プロの洗濯・アイロン仕上げ</li>
-                                    <li>• <strong>依頼方法:</strong> フロントデスクまたは客室電話</li>
-                                </ul>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-l-4 border-green-400">
-                                <h4 class="font-bold text-green-700 mb-3 flex items-center">
-                                    <span class="mr-2">🪙</span>セルフランドリー
-                                </h4>
-                                <ul class="space-y-2 text-sm text-gray-700">
-                                    <li>• <strong>場所:</strong> 6階（フィットネス近く）</li>
-                                    <li>• <strong>営業時間:</strong> 24時間利用可能</li>
-                                    <li>• <strong>洗濯機:</strong> 8MYR（約320円）/1回</li>
-                                    <li>• <strong>乾燥機:</strong> 6MYR（約240円）/30分</li>
-                                </ul>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-l-4 border-purple-400">
-                                <h4 class="font-bold text-purple-700 mb-3 flex items-center">
-                                    <span class="mr-2">🚿</span>客室手洗い
-                                </h4>
-                                <ul class="space-y-2 text-sm text-gray-700">
-                                    <li>• <strong>場所:</strong> バスルームの洗面台・バスタブ</li>
-                                    <li>• <strong>適用品:</strong> 下着、靴下、Tシャツなど</li>
-                                    <li>• <strong>料金:</strong> 無料（持参洗剤使用）</li>
-                                    <li>• <strong>乾燥時間:</strong> 4-8時間（湿度により変動）</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 6泊7日洗濯スケジュール -->
-                    <div class="bg-gradient-to-r from-orange-50 to-yellow-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-6 text-orange-800 flex items-center">
-                            <span class="mr-2">📅</span>6泊7日 効率的洗濯スケジュール
-                        </h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl">
-                                <h4 class="font-bold text-orange-700 mb-4 flex items-center">
-                                    <span class="mr-2">🌙</span>Day 3夜（8/10）- 中間洗濯日
-                                </h4>
-                                <div class="space-y-3">
-                                    <div class="bg-orange-100 p-3 rounded-lg">
-                                        <h5 class="font-semibold text-orange-800 mb-2">洗濯対象</h5>
-                                        <ul class="text-sm text-gray-700 space-y-1">
-                                            <li>• バトゥ洞窟で汗をかいた服（2-3着）</li>
-                                            <li>• 下着・靴下（3日分）</li>
-                                            <li>• 水着・タオル類</li>
-                                        </ul>
-                                    </div>
-                                    <div class="bg-blue-100 p-3 rounded-lg">
-                                        <h5 class="font-semibold text-blue-800 mb-2">推奨方法</h5>
-                                        <p class="text-sm text-gray-700"><strong>ランドリーサービス</strong>または<strong>セルフランドリー</strong></p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl">
-                                <h4 class="font-bold text-orange-700 mb-4 flex items-center">
-                                    <span class="mr-2">🌅</span>Day 6朝（8/13）- 最終洗濯日
-                                </h4>
-                                <div class="space-y-3">
-                                    <div class="bg-orange-100 p-3 rounded-lg">
-                                        <h5 class="font-semibold text-orange-800 mb-2">洗濯対象</h5>
-                                        <ul class="text-sm text-gray-700 space-y-1">
-                                            <li>• サンウェイラグーンの水着・濡れ物</li>
-                                            <li>• 残りの下着・靴下</li>
-                                            <li>• 軽い汚れの衣類</li>
-                                        </ul>
-                                    </div>
-                                    <div class="bg-blue-100 p-3 rounded-lg">
-                                        <h5 class="font-semibold text-blue-800 mb-2">推奨方法</h5>
-                                        <p class="text-sm text-gray-700"><strong>客室手洗い</strong>＋<strong>セルフランドリー</strong></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- タオルガイドセクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-blue-600 flex items-center">
-                        <span class="text-4xl mr-4">🏊</span>タオル完全ガイド
-                    </h2>
-                </div>
-                
-                <div class="bg-blue-50 p-4 rounded-xl mb-8">
-                    <p class="text-blue-800 font-semibold">🧺 6泊7日の快適な滞在のための、タオル持参・使用・管理の完全戦略をご紹介します</p>
-                </div>
-
-                <div class="space-y-8">
-                    <!-- アロフトのタオル事情 -->
-                    <div class="bg-gradient-to-r from-cyan-50 to-blue-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-6 text-blue-800 flex items-center">
-                            <span class="mr-2">🏨</span>アロフト・クアラルンプールのタオル事情
-                        </h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-l-4 border-green-400">
-                                <h4 class="font-bold text-green-700 mb-4 flex items-center">
-                                    <span class="mr-2">✅</span>ホテル提供タオル
-                                </h4>
-                                <ul class="space-y-3 text-sm text-gray-700">
-                                    <li class="flex items-start">
-                                        <span class="mr-2 text-green-600">🛁</span>
-                                        <div>
-                                            <strong>バスタオル：</strong>1人1枚<br>
-                                            <span class="text-xs text-gray-600">毎日交換可能、品質良好</span>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="mr-2 text-green-600">👤</span>
-                                        <div>
-                                            <strong>フェイスタオル：</strong>1人1枚<br>
-                                            <span class="text-xs text-gray-600">毎日交換可能、十分なサイズ</span>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-l-4 border-yellow-400">
-                                <h4 class="font-bold text-yellow-700 mb-4 flex items-center">
-                                    <span class="mr-2">⚠️</span>注意が必要な点
-                                </h4>
-                                <ul class="space-y-3 text-sm text-gray-700">
-                                    <li class="flex items-start">
-                                        <span class="mr-2 text-yellow-600">🏊</span>
-                                        <div>
-                                            <strong>プール用タオル：</strong>数に限りあり<br>
-                                            <span class="text-xs text-gray-600">繁忙期は不足、早い者勝ち</span>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="mr-2 text-yellow-600">🌞</span>
-                                        <div>
-                                            <strong>外出用：</strong>提供なし<br>
-                                            <span class="text-xs text-gray-600">観光時の汗拭きは要持参</span>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 持参推奨タオル -->
-                    <div class="bg-gradient-to-r from-emerald-50 to-teal-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-6 text-teal-800 flex items-center">
-                            <span class="mr-2">📦</span>持参推奨タオル（4人家族の場合）
-                        </h3>
-                        <div class="grid md:grid-cols-3 gap-6">
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-2 border-red-400">
-                                <h4 class="font-bold text-red-700 mb-4 flex items-center">
-                                    <span class="mr-2">🚨</span>必須アイテム
-                                </h4>
-                                <div class="bg-red-50 p-4 rounded-lg">
-                                    <h5 class="font-semibold text-red-600 mb-2">🏊 速乾タオル（中サイズ）</h5>
-                                    <ul class="text-sm text-gray-700 space-y-1">
-                                        <li>• <strong>枚数：</strong>4枚（1人1枚）</li>
-                                        <li>• <strong>素材：</strong>マイクロファイバー製</li>
-                                        <li>• <strong>サイズ：</strong>60×120cm程度</li>
-                                        <li>• <strong>用途：</strong>プール、サンウェイラグーン</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-2 border-blue-400">
-                                <h4 class="font-bold text-blue-700 mb-4 flex items-center">
-                                    <span class="mr-2">🌟</span>便利アイテム
-                                </h4>
-                                <div class="bg-blue-50 p-4 rounded-lg">
-                                    <h5 class="font-semibold text-blue-600 mb-2">❄️ 冷感タオル</h5>
-                                    <ul class="text-sm text-gray-700 space-y-1">
-                                        <li>• <strong>枚数：</strong>2枚</li>
-                                        <li>• <strong>効果：</strong>水で濡らして首元冷却</li>
-                                        <li>• <strong>用途：</strong>バトゥ洞窟、屋外観光</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="bg-white bg-opacity-70 p-5 rounded-xl border-2 border-green-400">
-                                <h4 class="font-bold text-green-700 mb-4 flex items-center">
-                                    <span class="mr-2">💡</span>おすすめブランド
-                                </h4>
-                                <div class="bg-green-50 p-4 rounded-lg">
-                                    <h5 class="font-semibold text-green-600 mb-2">速乾タオル</h5>
-                                    <ul class="text-sm text-gray-700 space-y-1">
-                                        <li>• <strong>Uniqlo：</strong>エアリズム（1,290円）</li>
-                                        <li>• <strong>無印良品：</strong>軽量薄手（1,190円）</li>
-                                        <li>• <strong>Amazon：</strong>マイクロファイバー（800円）</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 持ち物セクション -->
-            <section class="bg-white bg-opacity-80 p-8 rounded-2xl shadow-lg">
-                <div class="section-header">
-                    <h2 class="text-3xl font-bold text-purple-600 flex items-center">
-                        <span class="text-4xl mr-4">🎒</span>持ち物チェックリスト
-                    </h2>
-                </div>
-                
-                <div class="grid lg:grid-cols-2 gap-8">
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-4 text-purple-800">📱 必需品</h3>
-                        <ul class="card-list space-y-3">
-                            <li><strong>パスポート：</strong> 残存期間6ヶ月以上</li>
-                            <li><strong>航空券：</strong> e-ticket印刷またはアプリ</li>
-                            <li><strong>現金・カード：</strong> Wiseカード推奨</li>
-                            <li><strong>スマートフォン：</strong> Grabアプリダウンロード済み</li>
-                            <li><strong>充電器：</strong> 変換プラグも忘れずに</li>
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-2xl mb-6">
+                        <h3 class="font-bold text-xl mb-4 text-blue-800">🗼 KLタワー入場料</h3>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li>• <strong>大人:</strong> RM105（約3,360円〜3,675円）</li>
+                            <li>• <strong>子供（3-12歳）:</strong> RM65（約2,080円〜2,275円）</li>
+                            <li>• <strong>4人家族想定:</strong> 約10,880円〜11,900円</li>
+                            <li>• <strong>Sky Box追加:</strong> +RM25（約800円〜875円）</li>
                         </ul>
+                    </div>
+
+                    <ul class="space-y-4 card-list">
+                        <li><strong>為替レート:</strong> 1マレーシアリンギット(MYR) ≒ 32円〜35円 (2025年1月時点)</li>
+                        <li><strong>両替:</strong> 空港より市街地の両替所の方がレートが良いです</li>
+                        <li><strong>支払い:</strong> モール等はカード可、屋台やローカル店は現金が主流</li>
+                        <li><strong>Wiseカード:</strong> 事前にリンギットに両替でき、現地ATMでの引き出しにも便利</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- その他役立つ情報と注意点 -->
+            <div id="tab-tips" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">💡</span>
+                        <h2 class="text-3xl font-bold text-pink-600">その他役立つ情報と注意点</h2>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl">
-                        <h3 class="font-bold text-2xl mb-4 text-green-800">👕 衣類・日用品</h3>
-                        <ul class="card-list space-y-3">
-                            <li><strong>軽装：</strong> Tシャツ、短パン中心</li>
-                            <li><strong>羽織り物：</strong> 冷房対策必須</li>
-                            <li><strong>日焼け止め：</strong> SPF30以上推奨</li>
-                            <li><strong>折りたたみ傘：</strong> スコール対策</li>
-                            <li><strong>水着：</strong> ホテルプール・テーマパーク用</li>
-                        </ul>
+                    <div class="space-y-6">
+                        <details class="group bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-blue-700 flex items-center">
+                                <span class="mr-3 text-2xl">🌤️</span>
+                                気候と服装
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6">
+                                <ul class="space-y-2 text-gray-700 text-sm">
+                                    <li>• 年間を通して高温多湿</li>
+                                    <li>• 午後にスコール（短時間の強い雨）が多い</li>
+                                    <li>• 屋内は冷房が非常に強いので、薄手の羽織り物が必要</li>
+                                    <li>• 日焼け止め、サングラス、折りたたみ傘は必須</li>
+                                </ul>
+                            </div>
+                        </details>
+
+                        <!-- モスク見学マナー -->
+                        <details class="group bg-gradient-to-r from-emerald-50 to-emerald-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-emerald-700 flex items-center">
+                                <span class="mr-3 text-2xl">🕌</span>
+                                モスク見学マナー（Veltraツアー対応）
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6">
+                                <ul class="space-y-2 text-gray-700 text-sm">
+                                    <li>• <strong>服装:</strong> Veltraツアーでは適切なローブを貸出してくれるので準備不要</li>
+                                    <li>• <strong>靴:</strong> 入場前に脱ぐため、脱ぎ履きしやすい靴がおすすめ</li>
+                                    <li>• <strong>撮影:</strong> ガイドの指示に従い、指定エリアでのみ撮影</li>
+                                    <li>• <strong>お祈り時間:</strong> ガイドが配慮した時間設定で安心</li>
+                                    <li>• <strong>マナー:</strong> 静かに見学、大きな声や走ることは禁止</li>
+                                </ul>
+                            </div>
+                        </details>
+                        
+                        <details class="group bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-green-700 flex items-center">
+                                <span class="mr-3 text-2xl">🛡️</span>
+                                治安と安全
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6">
+                                <ul class="space-y-2 text-gray-700 text-sm">
+                                    <li>• 比較的安全ですが、スリやひったくりには注意</li>
+                                    <li>• 夜間の一人歩きや人通りの少ない道は避ける</li>
+                                    <li>• 詐欺にも注意。知らない人を安易に信用しない</li>
+                                    <li>• KLタワーやモスクなどの観光地は比較的安全</li>
+                                </ul>
+                            </div>
+                        </details>
                     </div>
                 </div>
-            </section>
+            </div>
+
+            <!-- 旅程モデル -->
+            <div id="tab-itinerary" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">📅</span>
+                        <h2 class="text-3xl font-bold text-teal-600">6泊7日 家族旅行モデルプラン</h2>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-teal-50 to-blue-50 p-6 rounded-2xl mb-8">
+                        <h3 class="font-bold text-xl mb-4 text-teal-800">✈️ 旅行概要（KLタワー＆モスクツアー版）</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-3">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">📅 旅行期間</h4>
+                                    <p class="text-sm text-gray-700">2025年8月8日（金）〜 8月14日（木）<br>6泊7日</p>
+                                </div>
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">👨‍👩‍👧‍👦 旅行者</h4>
+                                    <p class="text-sm text-gray-700">4人家族</p>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">🏨 宿泊先</h4>
+                                    <p class="text-sm text-gray-700">アロフト・クアラルンプール<br>（セントラル駅エリア）</p>
+                                </div>
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">🎯 新要素</h4>
+                                    <p class="text-sm text-gray-700">KLタワー展望台＋Veltraモスクツアー</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <details class="group bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-red-700 flex items-center">
+                                <span class="mr-3 text-2xl">🛬</span>
+                                Day 1 - 8月8日（金）到着日
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-red-700 mb-2">✈️ フライト・移動</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>14:25</strong> 関空発 → <strong>20:25</strong> KLIA着（現地時間）</li>
+                                        <li><strong>21:00</strong> 入国手続き・荷物受取</li>
+                                        <li><strong>21:30</strong> Grabでホテルへ（約45分）</li>
+                                        <li><strong>22:30</strong> アロフト・クアラルンプール到着・チェックイン</li>
+                                        <li><strong>23:00</strong> 就寝（時差ぼけ対策で早めに休む）</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="group bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-blue-700 flex items-center">
+                                <span class="mr-3 text-2xl">🗼</span>
+                                Day 2 - 8月9日（土）KLタワー＆市内一望
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-700 mb-2">🌅 午前（8:00-12:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>8:00</strong> Oriental Kopiでカヤトースト朝食体験</li>
+                                        <li><strong>9:30</strong> GrabでKLタワーへ（約20分）</li>
+                                        <li><strong>10:00</strong> KLタワー到着・チケット購入（事前予約推奨）</li>
+                                        <li><strong>10:30</strong> 展望台でクアラルンプール360度パノラマビュー</li>
+                                        <li><strong>11:30</strong> Sky Boxでスリル体験（希望者のみ）</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-700 mb-2">🍽️ 午後（12:00-18:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>12:30</strong> KLタワー周辺で軽めランチ</li>
+                                        <li><strong>13:30</strong> 国立モスク（マスジッド・ネガラ）見学</li>
+                                        <li><strong>15:00</strong> 独立広場（ムルデカ・スクエア）散策</li>
+                                        <li><strong>16:30</strong> セントラルマーケットでお土産購入</li>
+                                        <li><strong>17:30</strong> ホテルへ戻り・プールタイム</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-700 mb-2">🌆 夜（18:00-22:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>19:00</strong> ホテル内Nookでディナー</li>
+                                        <li><strong>20:30</strong> 屋上MAIバーで夜景とドリンク（大人のみ）</li>
+                                        <li><strong>21:30</strong> 客室でくつろぎタイム</li>
+                                        <li><strong>22:00</strong> 就寝</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+                                    <p class="text-blue-700 text-sm"><strong>🗼 KLタワーのポイント:</strong> 到着翌日に市内を一望することで、地理感覚を掴めます。昼間の訪問で、以降の観光地の位置関係も把握しやすくなります。</p>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 3 -->
+                        <details class="group bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-green-700 flex items-center">
+                                <span class="mr-3 text-2xl">🦜</span>
+                                Day 3 - 8月10日（日）バトゥ洞窟・バード&バタフライパーク
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-green-700 mb-2">🌄 午前（8:00-12:30）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>8:00</strong> Village Park Restaurantで本格ナシレマ朝食</li>
+                                        <li><strong>9:00</strong> Grabでバトゥ洞窟へ（約45分）</li>
+                                        <li><strong>10:00</strong> バトゥ洞窟見学（272段の階段に挑戦！猿に注意）</li>
+                                        <li><strong>11:30</strong> 近くのインド料理レストランで軽めランチ</li>
+                                        <li><strong>12:30</strong> KLバード・パークへ移動（約30分）</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-green-700 mb-2">🦜 午後（13:00-17:30）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>13:00</strong> KLバード・パーク見学（世界最大級の飛行可能バード・パーク！）</li>
+                                        <li><strong>14:30</strong> KLバタフライ・パーク見学（美しい蝶々の楽園）</li>
+                                        <li><strong>15:30</strong> チョウキット・マーケットでフルーツ体験ツアー</li>
+                                        <li><strong>16:30</strong> Ais Kacang（カキ氷）でクールダウン</li>
+                                        <li><strong>17:30</strong> ホテルへ戻る</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-400">
+                                    <p class="text-green-700 text-sm"><strong>🦜 ファミリーポイント:</strong> バード・パークでは餌やり体験ができます！バタフライ・パークは写真撮影に最適。フルーツマーケットでは珍しい南国フルーツに挑戦してみてください。</p>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 4 - Veltraモスクツアー -->
+                        <details class="group bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-emerald-700 flex items-center">
+                                <span class="mr-3 text-2xl">🕌</span>
+                                Day 4 - 8月11日（月）Veltraモスクツアー（本格文化体験）
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-emerald-700 mb-2">🌅 早朝・集合（8:00-9:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>8:00</strong> ホテルで軽い朝食（ツアー中の昼食込みのため軽め）</li>
+                                        <li><strong>8:30</strong> 集合場所へ移動（詳細は予約後に連絡）</li>
+                                        <li><strong>9:00</strong> Veltraツアー集合・ガイドとの顔合わせ</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-emerald-700 mb-2">🕌 ツアータイム（9:00-16:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>9:30</strong> プトラジャヤへ移動（専用車でゆったり移動）</li>
+                                        <li><strong>10:30</strong> プトラモスク（ピンクモスク）見学・撮影</li>
+                                        <li><strong>12:00</strong> ガイド推奨レストランでランチ（ハラル料理体験）</li>
+                                        <li><strong>13:30</strong> 国立モスク（Masjid Negara）詳細解説見学</li>
+                                        <li><strong>15:00</strong> その他モスク見学・文化解説</li>
+                                        <li><strong>16:00</strong> ツアー終了・ホテルまで送迎</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-emerald-700 mb-2">🌆 夜（17:00-22:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>17:00</strong> ホテル到着・休憩</li>
+                                        <li><strong>18:30</strong> プールで疲れを癒す</li>
+                                        <li><strong>19:30</strong> Oriental Kopiで軽めディナー</li>
+                                        <li><strong>21:00</strong> 客室でくつろぎ・ツアーの振り返り</li>
+                                        <li><strong>22:00</strong> 就寝</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-emerald-50 p-3 rounded-lg border-l-4 border-emerald-400">
+                                    <p class="text-emerald-700 text-sm"><strong>🕌 Veltraツアーの価値:</strong> 専門ガイドによる詳しい文化解説で、単なる観光を超えた深い文化体験ができます。適切な服装レンタルも含まれているので、家族で安心して参加できます。</p>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 5 -->
+                        <details class="group bg-gradient-to-r from-teal-50 to-blue-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-teal-700 flex items-center">
+                                <span class="mr-3 text-2xl">🎢</span>
+                                Day 5 - 8月12日（火）サンウェイラグーン（テーマパーク満喫）
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-teal-700 mb-2">🎡 全日（8:00-20:30）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>8:00</strong> ホテルで朝食・水着準備</li>
+                                        <li><strong>9:00</strong> Grabでサンウェイラグーンへ（約45分）</li>
+                                        <li><strong>10:00-17:00</strong> サンウェイラグーン満喫（ウォーターパーク・アミューズメント・動物園）</li>
+                                        <li><strong>18:00</strong> サンウェイピラミッドでディナー・ショッピング</li>
+                                        <li><strong>19:30</strong> クアラルンプールへ戻る</li>
+                                        <li><strong>20:30</strong> ホテル到着・シャワー・就寝準備</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
+                                    <p class="text-blue-700 text-sm"><strong>🎢 テーマパークのコツ:</strong> 前日のモスクツアーで文化体験をたっぷり楽しんだ後の、思いっきりエンターテイメント！水着・タオル・日焼け止め必須です。</p>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 6 -->
+                        <details class="group bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-purple-700 flex items-center">
+                                <span class="mr-3 text-2xl">🏮</span>
+                                Day 6 - 8月13日（水）チャイナタウン・最後のショッピング
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-purple-700 mb-2">🥐 午前（9:00-13:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>9:00</strong> ホン・キー（漢記粥）で生魚粥朝食体験</li>
+                                        <li><strong>10:30</strong> チャイナタウン散策・関帝廟見学</li>
+                                        <li><strong>12:00</strong> 新峰肉骨茶で絶品バクテーランチ</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-purple-700 mb-2">🛍️ 午後・夜（13:00-22:00）</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>13:30</strong> ミッドバレー・メガモールで最後のショッピング</li>
+                                        <li><strong>15:30</strong> Jalan Imbi Fruit Stallsで最後のフルーツ体験</li>
+                                        <li><strong>17:00</strong> ホテル戻り・荷物整理・チェックアウト準備</li>
+                                        <li><strong>19:00</strong> ジャラン・アロー屋台街で最後のマレーシア料理</li>
+                                        <li><strong>21:00</strong> ホテル・荷物最終確認</li>
+                                        <li><strong>22:00</strong> 最後の夜を満喫</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Day 7 -->
+                        <details class="group bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-xl shadow-md">
+                            <summary class="font-semibold text-xl cursor-pointer group-hover:text-gray-700 flex items-center">
+                                <span class="mr-3 text-2xl">🛬</span>
+                                Day 7 - 8月14日（木）帰国
+                                <span class="ml-auto transform group-open:rotate-180 transition-transform">▼</span>
+                            </summary>
+                            <div class="mt-6 space-y-4">
+                                <div class="bg-white/70 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-gray-700 mb-2">✈️ フライト・帰国</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li><strong>22:30</strong> Grabで空港へ出発</li>
+                                        <li><strong>23:30</strong> KLIA到着・チェックイン</li>
+                                        <li><strong>02:10</strong> KLIA発 → <strong>09:50</strong> 関空着（日本時間）</li>
+                                        <li><strong>10:30</strong> 入国手続き・荷物受取完了</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- 旅程ハイライト -->
+                    <div class="mt-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-2xl">
+                        <h3 class="font-bold text-xl mb-4 flex items-center">
+                            <span class="mr-2">🌟</span>この旅程の特別なポイント
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-6 text-sm">
+                            <div>
+                                <h4 class="font-semibold mb-2">🗼 KLタワーで得られる価値</h4>
+                                <ul class="space-y-1 opacity-90">
+                                    <li>• 360度パノラマビューで市内を完全把握</li>
+                                    <li>• 以降の観光地の位置関係が理解しやすく</li>
+                                    <li>• 家族での絶景写真撮影スポット</li>
+                                    <li>• KLのランドマークを一望できる特別体験</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-2">🕌 Veltraモスクツアーで得られる価値</h4>
+                                <ul class="space-y-1 opacity-90">
+                                    <li>• 専門ガイドによる深い文化理解</li>
+                                    <li>• 個人では難しい詳細解説付き見学</li>
+                                    <li>• 適切な服装レンタルで安心参加</li>
+                                    <li>• 家族での貴重な異文化体験</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 事前準備 -->
+            <div id="tab-preparation" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">✅</span>
+                        <h2 class="text-3xl font-bold text-emerald-600">日本出発前の事前準備</h2>
+                    </div>
+                    
+                    <div class="bg-emerald-50 p-4 rounded-xl mb-8">
+                        <p class="text-emerald-800 font-semibold">📋 KLタワー＆Veltraモスクツアー対応版：出発の1ヶ月前から順次準備を始めましょう</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- 特別予約・事前準備 -->
+                        <div class="bg-gradient-to-r from-emerald-50 to-emerald-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-emerald-800 flex items-center">
+                                <span class="mr-2">🎫</span>特別予約・事前準備（3週間前〜）
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-emerald-700 mb-3">🕌 Veltraモスクツアー予約</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>予約サイト：</strong> <a href="https://www.veltra.com/jp/asia/malaysia/kuala_lumpur/a/160599" class="text-blue-600 hover:underline">Veltra専用ページ</a></li>
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>料金確認：</strong> MYR540（10%割引適用後）</li>
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>催行確認：</strong> 2025年8月1-24日期間内</li>
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>支払い：</strong> クレジットカード決済推奨</li>
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>バウチャー印刷：</strong> 予約確認書の準備</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-emerald-700 mb-3">🗼 KLタワーチケット手配</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>事前購入：</strong> オンラインで割引価格</li>
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>料金：</strong> 大人RM105、子供RM65</li>
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>Sky Box:</strong> 追加オプション要検討</li>
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>時間指定：</strong> 15:00-17:00頃がおすすめ</li>
+                                        <li class="flex items-start"><span class="mr-2 text-emerald-600">☐</span><strong>チケット保存：</strong> スマホ・印刷両方準備</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 必須書類・手続き -->
+                        <div class="bg-gradient-to-r from-red-50 to-red-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-red-800 flex items-center">
+                                <span class="mr-2">📋</span>必須書類・手続き（1ヶ月前〜）
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-semibold text-red-700 mb-3">📄 書類の確認</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>パスポート残存期間：</strong> 入国時6ヶ月以上必要</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>航空券：</strong> e-ticketの印刷またはアプリ保存</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>ホテル予約確認書：</strong> 英語版を印刷</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>Veltraバウチャー：</strong> ツアー予約確認書</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-red-700 mb-3">🌐 オンライン手続き</h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>MDAC登録：</strong> マレーシア・デジタル・アライバル・カード（必須）</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>MyEG利用：</strong> 入国審査迅速化（推奨）</li>
+                                        <li class="flex items-start"><span class="mr-2 text-red-600">☐</span><strong>オンラインチェックイン：</strong> 出発24時間前</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 洗濯ガイド -->
+            <div id="tab-laundry" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">👕</span>
+                        <h2 class="text-3xl font-bold text-cyan-600">アロフト滞在中の洗濯完全ガイド</h2>
+                    </div>
+                    
+                    <div class="bg-cyan-50 p-4 rounded-xl mb-8">
+                        <p class="text-cyan-800 font-semibold">🧺 6泊7日の滞在を快適に過ごすための洗濯戦略とおすすめ方法をご紹介します</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- 6泊7日洗濯スケジュール -->
+                        <div class="bg-gradient-to-r from-orange-50 to-yellow-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-6 text-orange-800 flex items-center">
+                                <span class="mr-2">📅</span>6泊7日 効率的洗濯スケジュール
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="bg-white/70 p-5 rounded-xl">
+                                    <h4 class="font-bold text-orange-700 mb-4 flex items-center">
+                                        <span class="mr-2">🌙</span>Day 3夜（8/10）- 中間洗濯日
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="bg-orange-100 p-3 rounded-lg">
+                                            <h5 class="font-semibold text-orange-800 mb-2">洗濯対象</h5>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• バトゥ洞窟で汗をかいた服（2-3着）</li>
+                                                <li>• 下着・靴下（3日分）</li>
+                                                <li>• 水着・タオル類</li>
+                                                <li>• パジャマ・部屋着</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-blue-100 p-3 rounded-lg">
+                                            <h5 class="font-semibold text-blue-800 mb-2">推奨方法</h5>
+                                            <p class="text-sm text-gray-700"><strong>ランドリーサービス</strong>：翌日のVeltraツアー前にスッキリ！</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white/70 p-5 rounded-xl">
+                                    <h4 class="font-bold text-orange-700 mb-4 flex items-center">
+                                        <span class="mr-2">🌅</span>Day 5夜（8/12）- 最終洗濯日
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="bg-orange-100 p-3 rounded-lg">
+                                            <h5 class="font-semibold text-orange-800 mb-2">洗濯対象</h5>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• サンウェイラグーンの水着・濡れ物</li>
+                                                <li>• 残りの下着・靴下</li>
+                                                <li>• 軽い汚れの衣類</li>
+                                                <li>• 帰国用に清潔にしたい服</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-blue-100 p-3 rounded-lg">
+                                            <h5 class="font-semibold text-blue-800 mb-2">推奨方法</h5>
+                                            <p class="text-sm text-gray-700"><strong>セルフランドリー</strong>：最終2日間を快適に</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- アロフトホテルの洗濯オプション -->
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-6 text-blue-800 flex items-center">
+                                <span class="mr-2">🏨</span>アロフト・クアラルンプールの洗濯オプション
+                            </h3>
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="bg-white/70 p-5 rounded-xl border-l-4 border-blue-400">
+                                    <h4 class="font-bold text-blue-700 mb-3 flex items-center">
+                                        <span class="mr-2">🛎️</span>ランドリーサービス
+                                    </h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li>• <strong>料金:</strong> 1点 15-25MYR</li>
+                                        <li>• <strong>仕上がり:</strong> 翌日18:00まで</li>
+                                        <li>• <strong>品質:</strong> プロ仕上げ</li>
+                                        <li>• <strong>依頼:</strong> フロントデスク</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/70 p-5 rounded-xl border-l-4 border-green-400">
+                                    <h4 class="font-bold text-green-700 mb-3 flex items-center">
+                                        <span class="mr-2">🪙</span>セルフランドリー
+                                    </h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li>• <strong>場所:</strong> 6階</li>
+                                        <li>• <strong>洗濯:</strong> 8MYR/回</li>
+                                        <li>• <strong>乾燥:</strong> 6MYR/30分</li>
+                                        <li>• <strong>営業:</strong> 24時間</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white/70 p-5 rounded-xl border-l-4 border-purple-400">
+                                    <h4 class="font-bold text-purple-700 mb-3 flex items-center">
+                                        <span class="mr-2">🚿</span>客室手洗い
+                                    </h4>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li>• <strong>場所:</strong> バスルーム</li>
+                                        <li>• <strong>適用:</strong> 下着・小物</li>
+                                        <li>• <strong>料金:</strong> 無料</li>
+                                        <li>• <strong>乾燥:</strong> 4-8時間</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- タオルガイド -->
+            <div id="tab-towels" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🏊</span>
+                        <h2 class="text-3xl font-bold text-blue-600">タオル完全ガイド</h2>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-xl mb-8">
+                        <p class="text-blue-800 font-semibold">🧺 6泊7日の快適な滞在のための、タオル持参・使用・管理の完全戦略をご紹介します</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- 持参推奨タオル -->
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-6 text-teal-800 flex items-center">
+                                <span class="mr-2">📦</span>持参推奨タオル（4人家族の場合）
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="bg-white/70 p-5 rounded-xl border-2 border-red-400">
+                                    <h4 class="font-bold text-red-700 mb-4 flex items-center">
+                                        <span class="mr-2">🚨</span>必須アイテム
+                                    </h4>
+                                    <div class="space-y-4">
+                                        <div class="bg-red-50 p-4 rounded-lg">
+                                            <h5 class="font-semibold text-red-600 mb-2">🏊 速乾タオル（中サイズ）</h5>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• <strong>枚数：</strong>4枚（1人1枚）</li>
+                                                <li>• <strong>用途：</strong>プール、サンウェイラグーン、KLタワー見学時の汗拭き</li>
+                                                <li>• <strong>素材：</strong>マイクロファイバー製</li>
+                                                <li>• <strong>サイズ：</strong>60×120cm程度</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-red-50 p-4 rounded-lg">
+                                            <h5 class="font-semibold text-red-600 mb-2">🚶 ハンドタオル</h5>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• <strong>枚数：</strong>家族で6-8枚</li>
+                                                <li>• <strong>用途：</strong>バトゥ洞窟、Veltraツアー時の汗拭き</li>
+                                                <li>• <strong>サイズ：</strong>25×25cm程度</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white/70 p-5 rounded-xl border-2 border-blue-400">
+                                    <h4 class="font-bold text-blue-700 mb-4 flex items-center">
+                                        <span class="mr-2">🌟</span>便利アイテム
+                                    </h4>
+                                    <div class="space-y-4">
+                                        <div class="bg-blue-50 p-4 rounded-lg">
+                                            <h5 class="font-semibold text-blue-600 mb-2">❄️ 冷感タオル</h5>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• <strong>枚数：</strong>2枚</li>
+                                                <li>• <strong>用途：</strong>バトゥ洞窟（272段の階段）、屋外観光時の体温調節</li>
+                                                <li>• <strong>効果：</strong>水で濡らして首元冷却</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-blue-50 p-4 rounded-lg">
+                                            <h5 class="font-semibold text-blue-600 mb-2">🗼 観光用タオル</h5>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• <strong>用途：</strong>KLタワー展望台での風対策</li>
+                                                <li>• <strong>特徴：</strong>高所での強風時に重宝</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 持ち物 -->
+            <div id="tab-checklist" class="tab-content space-y-8">
+                <div class="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-lg hover-lift">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-4">🎒</span>
+                        <h2 class="text-3xl font-bold text-purple-600">持ち物チェックリスト</h2>
+                    </div>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-purple-800">📱 必需品</h3>
+                            <ul class="card-list space-y-3">
+                                <li><strong>パスポート：</strong> 残存期間6ヶ月以上</li>
+                                <li><strong>航空券：</strong> e-ticket印刷またはアプリ</li>
+                                <li><strong>Veltraバウチャー：</strong> モスクツアー予約確認書</li>
+                                <li><strong>KLタワーチケット：</strong> 事前購入推奨</li>
+                                <li><strong>現金・カード：</strong> Wiseカード推奨</li>
+                                <li><strong>スマートフォン：</strong> Grabアプリダウンロード済み</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl">
+                            <h3 class="font-bold text-2xl mb-4 text-green-800">👕 衣類・特別アイテム</h3>
+                            <ul class="card-list space-y-3">
+                                <li><strong>軽装：</strong> Tシャツ、短パン中心</li>
+                                <li><strong>羽織り物：</strong> KLタワー展望台・モスク見学時の冷房対策</li>
+                                <li><strong>歩きやすい靴：</strong> バトゥ洞窟の階段、モスク見学（脱ぎ履きしやすいもの）</li>
+                                <li><strong>日焼け止め：</strong> SPF30以上（KLタワー屋外展望台用）</li>
+                                <li><strong>水着：</strong> ホテルプール・サンウェイラグーン用</li>
+                                <li><strong>帽子・サングラス：</strong> 屋外観光必須</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 新要素への対応アイテム -->
+                    <div class="mt-8 bg-gradient-to-r from-indigo-50 to-purple-100 p-6 rounded-2xl">
+                        <h3 class="font-bold text-xl mb-4 text-indigo-800 flex items-center">
+                            <span class="mr-2">🆕</span>KLタワー＆Veltraツアー特別対応アイテム
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-indigo-700 mb-3">🗼 KLタワー用</h4>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start"><span class="mr-2 text-indigo-600">📱</span><strong>スマホ・カメラ:</strong> 充電満タン（絶景撮影用）</li>
+                                    <li class="flex items-start"><span class="mr-2 text-indigo-600">🧥</span><strong>薄手ジャケット:</strong> 展望台の風対策</li>
+                                    <li class="flex items-start"><span class="mr-2 text-indigo-600">💊</span><strong>酔い止め:</strong> 高所が苦手な方用</li>
+                                    <li class="flex items-start"><span class="mr-2 text-indigo-600">🎒</span><strong>小さなバッグ:</strong> 貴重品用（ハンズフリー撮影）</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-indigo-700 mb-3">🕌 Veltraモスクツアー用</h4>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start"><span class="mr-2 text-indigo-600">👟</span><strong>脱ぎ履きしやすい靴:</strong> モスク入場時必須</li>
+                                    <li class="flex items-start"><span class="mr-2 text-indigo-600">🧴</span><strong>ウェットティッシュ:</strong> 清拭用</li>
+                                    <li class="flex items-start"><span class="mr-2 text-indigo-600">💧</span><strong>水分補給用ボトル:</strong> 7時間ツアー対応</li>
+                                    <li class="flex items-start"><span class="mr-2 text-indigo-600">📓</span><strong>小さなメモ帳:</strong> ガイド説明メモ用</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </main>
         
-        <footer class="mt-12 text-center py-6 bg-white bg-opacity-50 rounded-2xl">
-            <p class="text-gray-600">🌟 素敵なクアラルンプール旅行をお楽しみください！</p>
-            <p class="text-sm text-gray-500 mt-2">このガイドが皆様の旅行のお役に立てれば幸いです。</p>
+        <footer class="mt-12 text-center py-6 bg-white/50 backdrop-blur-md rounded-2xl">
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">🌟 素敵なクアラルンプール旅行をお楽しみください！</h3>
+                <p class="text-sm text-gray-600">KLタワーの絶景とVeltraモスクツアーで、忘れられない家族の思い出を作ってください</p>
+            </div>
+            <div class="flex justify-center items-center space-x-4 text-sm text-gray-500">
+                <span>🗼 KLタワー展望台</span>
+                <span>•</span>
+                <span>🕌 本格モスクツアー</span>
+                <span>•</span>
+                <span>👨‍👩‍👧‍👦 家族旅行完全ガイド</span>
+            </div>
         </footer>
     </div>
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"96b2555eed65965c","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2025.7.0","token":"4edd5f8ec12a48cfa682ab8261b80a79"}' crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const scrollProgress = document.getElementById('scrollProgress');
+
+            function updateScrollProgress() {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                scrollProgress.style.width = scrollPercent + '%';
+            }
+
+            window.addEventListener('scroll', updateScrollProgress);
+
+            const initialTabId = window.location.hash ? window.location.hash.substring(1) : 'tab-overview';
+            const initialTabButton = document.querySelector(`[data-tab="${initialTabId}"]`);
+            
+            if (initialTabButton) {
+                activateTab(initialTabButton);
+            } else {
+                activateTab(tabs[0]);
+            }
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    activateTab(tab);
+                    window.location.hash = tab.dataset.tab;
+                    
+                    const tabNav = document.querySelector('nav').parentElement;
+                    tabNav.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            function activateTab(selectedTab) {
+                const targetId = selectedTab.dataset.tab;
+                const targetContent = document.getElementById(targetId);
+
+                tabs.forEach(t => t.classList.remove('tab-active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                selectedTab.classList.add('tab-active');
+                if (targetContent) {
+                    setTimeout(() => {
+                        targetContent.classList.add('active');
+                    }, 50);
+                }
+            }
+        });
+    </script>
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"96b6411ce9d219dd","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2025.7.0","token":"4edd5f8ec12a48cfa682ab8261b80a79"}' crossorigin="anonymous"></script>
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDpgdzvE4GzSHsyWvNKsfhB7L%2BDrkA6vU6%2FVI7of6awQvUG5%2Fcfhi8ZObYXOKqt%2FVM41krozOK68ABkctyGHhoqbkUECPULzKAazQHJZf4Dabnc4lxGJhMTgflA5rx03pwXxV60IM9TIyti64kTP3xEyP5GhuDYsLvSRhPHRJK7Qz0YbKpakAEaW5lNrY58VKZOF9R%2Fy2Tj2AjIbrDaCAvZBZMMNYoQ9SYq58Idbyx%2BcqFaUGhbOfBJmRdEQvjBrQnm7Echsx7%2BZ2E07b6CtmGHnrEZZTELGHglb4ewu8DlDrjC3BEUnMXymDXsmtCgtUTTWXOeTS86%2BSFb4O72xQW%2BaiUhDHmsWRopZzWFfTm2GxmVOqz8%2B2fZtHopR0hkTwPo1m20Y9brZgLeYGBjiAA1jB%2BE96kb2V%2FIWaskij%2FLLY1XGSrtQ1FIa4z%2FiStnYzu7c%2FIMQPEw%2FNd7Y1%2FiBVxEvslsM7X14xSNR6K%2F0pr4sFc87yHalnerWENL6l2vbii6OAQh6pwDuHMzE4p3BuPQo%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDsZ04bWInVTqgQVpzRHR5Mq%2Bh3T7c0xY9OFBf1dQOD%2FZ%2B8ZOzXmZS2YUI1Z6%2Bpc640mNik0ePjE8gMHIP5jcCADadeQTcD8qRJHft4QHyIL515nUDBEk3x9GKSL4iA69dN7UvKduqGRHHuf4V%2FKlGgNC%2FNYBKbR%2F9FAbQyHqANAHeTe3yxi59XnKTqxV%2BH%2B%2B97TWK1juj3Uxs%2FDuFdjchoDUfu9Xob8K%2FsvRXHtc27Gv%2FCi5OyiT2bbHNqnosTv%2FjnP6YaAwQkHVmwfpewGB%2FV%2BPRmXydNcR2uLIFZXLJJTsCWTeVdLbGTIEWiDW3F2cQr%2FEw3TYKPGvxMe4E%2B83VjGO71GAXDQoPLna2wNOLHetnnmoB2KwFVWvY0y%2FYjNdzHSZOP373iJzehNsjQ5XQyCwksA5cf%2BJBuAx7KkY8o%2FE9R721EVoCBMj3A3FBbFWJCakrX%2FQqNXFbmQoKVkOevH0O56y6Wtjf%2BlsL36YXDEQ02gj71%2BChUN8aLpKWjI6UEKX8B2hAbkesJh1gNUCBAw%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDpgdzvE4GzSHsyWvNKsfhB7L+DrkA6vU6/VI7of6awQvUG5/cfhi8ZObYXOKqt/VM41krozOK68ABkctyGHhoqbkUECPULzKAazQHJZf4Dabnc4lxGJhMTgflA5rx03pwXxV60IM9TIyti64kTP3xEyP5GhuDYsLvSRhPHRJK7Qz0YbKpakAEaW5lNrY58VKZOF9R/y2Tj2AjIbrDaCAvZBZMMNYoQ9SYq58Idbyx+cqFaUGhbOfBJmRdEQvjBrQnm7Echsx7+Z2E07b6CtmGHnrEZZTELGHglb4ewu8DlDrjC3BEUnMXymDXsmtCgtUTTWXOeTS86+SFb4O72xQW+aiUhDHmsWRopZzWFfTm2GxmVOqz8+2fZtHopR0hkTwPo1m20Y9brZgLeYGBjiAA1jB+E96kb2V/IWaskij/LLY1XGSrtQ1FIa4z/iStnYzu7c/IMQPEw/Nd7Y1/iBVxEvslsM7X14xSNR6K/0pr4sFc87yHalnerWENL6l2vbii6OAQh6pwDuHMzE4p3BuPQo=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDsZ04bWInVTqgQVpzRHR5Mq+h3T7c0xY9OFBf1dQOD/Z+8ZOzXmZS2YUI1Z6+pc640mNik0ePjE8gMHIP5jcCADadeQTcD8qRJHft4QHyIL515nUDBEk3x9GKSL4iA69dN7UvKduqGRHHuf4V/KlGgNC/NYBKbR/9FAbQyHqANAHeTe3yxi59XnKTqxV+H++97TWK1juj3Uxs/DuFdjchoDUfu9Xob8K/svRXHtc27Gv/Ci5OyiT2bbHNqnosTv/jnP6YaAwQkHVmwfpewGB/V+PRmXydNcR2uLIFZXLJJTsCWTeVdLbGTIEWiDW3F2cQr/Ew3TYKPGvxMe4E+83VjGO71GAXDQoPLna2wNOLHetnnmoB2KwFVWvY0y/YjNdzHSZOP373iJzehNsjQ5XQyCwksA5cf+JBuAx7KkY8o/E9R721EVoCBMj3A3FBbFWJCakrX/QqNXFbmQoKVkOevH0O56y6Wtjf+lsL36YXDEQ02gj71+ChUN8aLpKWjI6UEKX8B2hAbkesJh1gNUCBAw=";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
